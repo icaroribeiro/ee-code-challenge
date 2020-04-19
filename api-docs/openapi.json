@@ -17,8 +17,8 @@
             "description": "It refers to the operation linked to service status."
         },
         {
-            "name": "user repository",
-            "description": "It refers to the operations linked to user repositories."
+            "name": "repository",
+            "description": "It refers to the operations linked to repositories."
         }
     ],
     "paths": {
@@ -39,7 +39,7 @@
         "/users/{userId}/githubStarredRepositories": {
             "get": {
                 "tags": [
-                    "user repository"
+                    "repository"
                 ],
                 "summary": "API endpoint designed to retrieve the list of all user Github starred repositories.",
                 "operationId": "GetAllUserGithubStarredRepositories",
@@ -107,9 +107,9 @@
         "/users/{userId}/repository": {
             "post": {
                 "tags": [
-                    "user repository"
+                    "repository"
                 ],
-                "summary": "API endpoint designed to register a new user repository.",
+                "summary": "API endpoint designed to register a new repository.",
                 "operationId": "CreateUserRepository",
                 "parameters": [{
                         "name": "userId",
@@ -206,7 +206,7 @@
         "/users/{userId}/repositories": {
             "get": {
                 "tags": [
-                    "user repository"
+                    "repository"
                 ],
                 "summary": "API endpoint designed to retrieve the list of all user repositories.",
                 "operationId": "GetAllUserRepositories",
@@ -277,13 +277,13 @@
                 }
             }
         },
-        "/user/{userId}/repositories/{repositoryId}": {
+        "/users/{userId}/repositories/{repositoryId}": {
             "put": {
                 "tags": [
-                    "user repository"
+                    "repository"
                 ],
-                "summary": "API endpoint designed to update a specific user repository by its id.",
-                "operationId": "CreateUserRepository",
+                "summary": "API endpoint designed to update a specific repository by its id.",
+                "operationId": "UpdateUserRepository",
                 "parameters": [{
                         "name": "userId",
                         "in": "path",
@@ -389,9 +389,9 @@
             },
             "delete": {
                 "tags": [
-                "user repository"
+                "repository"
                 ],
-                "summary": "API endpoint designed to delete a specific user repository by its id.",
+                "summary": "API endpoint designed to delete a specific repository by its id.",
                 "operationId": "DeleteUserRepository",
                 "parameters": [{
                         "name": "userId",

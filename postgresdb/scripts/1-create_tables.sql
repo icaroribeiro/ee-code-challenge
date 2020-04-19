@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS repositories (
     language VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_repository_tags (
+CREATE TABLE IF NOT EXISTS user_repositories (
     user_id VARCHAR(255) NOT NULL,
     repository_id VARCHAR(255) NOT NULL,
     tags VARCHAR (255) ARRAY NOT NULL,
