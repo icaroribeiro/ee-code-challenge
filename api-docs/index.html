@@ -1,0 +1,84 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Olist Code Challenge</title>
+      <link rel="stylesheet" type="text/css" href="./libraries/swagger-ui/3.23.8/swagger-ui.css" >
+      <style>
+        html
+        {
+          box-sizing: border-box;
+          overflow: -moz-scrollbars-vertical;
+          overflow-y: scroll;
+        }
+
+        *,
+        *:before,
+        *:after
+        {
+          box-sizing: inherit;
+        }
+
+        body
+        {
+          margin:0;
+          background: #fafafa;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="./libraries/swagger-ui/3.23.8/swagger-ui-bundle.js"> </script>
+      <script src="./libraries/swagger-ui/3.23.8/swagger-ui-standalone-preset.js"> </script>
+      <script src="./libraries/swagger-ui/3.23.8/swagger-ui.js"> </script>
+      <script>
+      window.onload = function() {
+
+        var spec = {"openapi": "3.0.0", "info": {"version": "1.0.0", "title": "Olist Code Challenge", "description": "A REST API implemented using Go programming language and Postgres database which exposes HTTP routes to manage operations linked to author(s) and book(s).", "contact": {"name": "Icaro Ribeiro", "email": "icaroribeiro@hotmail.com"}}, "servers": [{"url": "http://X.X.X.X:8080"}], "tags": [{"name": "status", "description": "It refers to the operation linked to service status."}, {"name": "csv file", "description": "It refers to the operation linked to csv file."}, {"name": "author", "description": "It refers to the operations linked to author(s)."}, {"name": "book", "description": "It refers to the operations linked to book(s)."}], "paths": {"/status": {"get": {"tags": ["status"], "summary": "API Endpoint designed to verify if the service has started up correctly and is ready to accept requests.", "operationId": "GetStatus", "responses": {"200": {"description": "The service has started up successfully."}}}}, "/csv-file": {"post": {"tags": ["csv file"], "summary": "API Endpoint designed to import data from csv file beyond the command line.", "operationId": "UploadCSVFile", "requestBody": {"content": {"multipart/form-data": {"schema": {"type": "object", "properties": {"filename": {"type": "string", "format": "binary"}}}}}}, "responses": {"200": {"description": "Successful operation."}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}}, "/authors": {"get": {"tags": ["author"], "summary": "API Endpoint designed to get the paginated list of all authors.", "operationId": "GetAllAuthors", "parameters": [{"name": "page_number", "in": "query", "description": "The number of the displayed page.", "required": false, "schema": {"type": "integer"}}, {"name": "page_size", "in": "query", "description": "The number of items on the displayed page.", "required": false, "schema": {"type": "integer"}}, {"name": "name", "in": "query", "description": "The name of the author(s).", "required": false, "schema": {"type": "string"}}, {"name": "sort_param", "in": "query", "description": "The name of the parameter used in ordering the author(s).", "required": false, "schema": {"type": "string", "enum": ["name"]}}, {"name": "sort_order", "in": "query", "description": "The type used in ordering the author(s).", "required": false, "schema": {"type": "string", "enum": ["asc", "desc"]}}], "responses": {"200": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["page_number", "page_size", "total_count", "listings"], "properties": {"page_number": {"type": "integer"}, "page_size": {"type": "integer"}, "total_count": {"type": "integer"}, "listings": {"type": "array", "items": {"type": "object", "required": ["id", "name"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}}}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}}, "/book": {"post": {"tags": ["book"], "summary": "API Endpoint designed to create a new book.", "operationId": "CreateBook", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["name", "edition", "publication_year", "authors"], "properties": {"name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "responses": {"201": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["id", "name", "edition", "publication_year", "authors"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "404": {"description": "Got a not found error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}}, "/books": {"get": {"tags": ["book"], "summary": "API Endpoint designed to get the paginated list of all books.", "operationId": "GetAllBooks", "parameters": [{"name": "page_number", "in": "query", "description": "The number of the displayed page.", "required": false, "schema": {"type": "integer"}}, {"name": "page_size", "in": "query", "description": "The number of items on the displayed page.", "required": false, "schema": {"type": "integer"}}, {"name": "name", "in": "query", "description": "The name of the book(s).", "required": false, "schema": {"type": "string"}}, {"name": "edition", "in": "query", "description": "The edition of the book(s).", "required": false, "schema": {"type": "integer"}}, {"name": "publication_year", "in": "query", "description": "The year of publication of the book(s).", "required": false, "schema": {"type": "integer"}}, {"name": "author", "in": "query", "description": "The name of the author of the book(s).", "required": false, "schema": {"type": "string"}}, {"name": "sort_param", "in": "query", "description": "The name of the parameter used in ordering the book(s).", "required": false, "schema": {"type": "string", "enum": ["name", "publication_year"]}}, {"name": "sort_order", "in": "query", "description": "The type used in ordering the book(s).", "required": false, "schema": {"type": "string", "enum": ["asc", "desc"]}}], "responses": {"200": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["page_number", "page_size", "total_count", "listings"], "properties": {"page_number": {"type": "integer"}, "page_size": {"type": "integer"}, "total_count": {"type": "integer"}, "listings": {"type": "array", "items": {"type": "object", "required": ["id", "name", "edition", "publication_year", "authors"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}}, "/books/{bookId}": {"get": {"tags": ["book"], "summary": "API Endpoint designed to get a specific book by its id.", "operationId": "GetBook", "parameters": [{"name": "bookId", "in": "path", "description": "The id of the book.", "required": true, "schema": {"type": "integer"}}], "responses": {"200": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["id", "name", "edition", "publication_year", "authors"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "404": {"description": "Got a not found error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}, "put": {"tags": ["book"], "summary": "API Endpoint designed to update a specific book by its id.", "operationId": "UpdateBook", "parameters": [{"name": "bookId", "in": "path", "description": "The id of the book.", "required": true, "schema": {"type": "integer"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["name", "edition", "publication_year", "authors"], "properties": {"name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "responses": {"200": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["id", "name", "edition", "publication_year", "authors"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "404": {"description": "Got a not found error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "409": {"description": "Got a conflict error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}, "delete": {"tags": ["book"], "summary": "API Endpoint designed to delete a specific book by its id.", "operationId": "DeleteBook", "parameters": [{"name": "bookId", "in": "path", "description": "The id of the book.", "required": true, "schema": {"type": "integer"}}], "responses": {"200": {"description": "Successful operation.", "content": {"application/json": {"schema": {"type": "object", "required": ["id", "name", "edition", "publication_year", "authors"], "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "edition": {"type": "integer"}, "publication_year": {"type": "integer"}, "authors": {"description": "The list of the ids of all authors.", "type": "array", "items": {"type": "integer"}}}}}}}, "400": {"description": "Got a bad request error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "404": {"description": "Got a not found error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "500": {"description": "Got an internal application error.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}}}}, "components": {"schemas": {"Error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}}}}}};
+
+        const HideTopbarPlugin = function() {
+          return {
+            components: {
+              Topbar: function() {
+                return null
+              }
+            }
+          }
+        }
+
+        const DisableTryItOutPlugin = function() {
+          return {
+            statePlugins: {
+              spec: {
+                wrapSelectors: {
+                  allowTryItOutFor: () => () => false
+                }
+              }
+            }
+          }
+        }
+
+        const ui = SwaggerUIBundle({
+          spec: spec,
+          dom_id: '#swagger-ui',
+          <!-- withCredentials: true, -->
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl,
+            HideTopbarPlugin
+          ],
+          layout: "StandaloneLayout"
+        })
+
+        window.ui = ui
+      }
+    </script>
+    </body>
+  </html>
+  
