@@ -6,7 +6,7 @@ The purpose of this file is to present information about the work developed to s
 
 *Website*: https://github.com/estrategiahq/desafio-software-engineer
 
-In order to summarise, the project comprehends the implementation of a back-end and a front-end applications for the management of tags related to users' starred repositories from Github. It is composed by a **REST** API developed using **Go** programming language and web pages developed using ReactJS programming languages with Redux, in addition to a **Postgres** database.
+In order to summarise, the project comprehends the implementation of a back-end and a front-end applications for the management of tags related to users Github starred repositories. It is composed by a **REST** API developed using **Go** programming language and web pages developed using ReactJS programming languages with Redux, in addition to a **Postgres** database.
 
 Throughout this documentation, a few aspects will be highlighted, such as, the configuration of environment variables of the **Postgres** database and the procedures adopted to run the project with **Docker** containers.
 

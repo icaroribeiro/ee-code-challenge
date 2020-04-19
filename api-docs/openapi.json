@@ -41,8 +41,8 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API endpoint designed to retrieve the list of all user's starred repositories from Github.",
-                "operationId": "GetAllGithubUserStarredRepositories",
+                "summary": "API endpoint designed to retrieve the list of all user starred repositories from Github.",
+                "operationId": "GetAllUserGithubStarredRepositories",
                 "parameters": [{
                         "name": "userId",
                         "in": "path",
@@ -208,7 +208,7 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API endpoint designed to retrieve the list of all user's repositories.",
+                "summary": "API endpoint designed to retrieve the list of all user repositories.",
                 "operationId": "GetAllUserRepositories",
                 "parameters": [{
                         "name": "userId",
