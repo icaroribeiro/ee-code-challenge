@@ -5,7 +5,7 @@ Usage:
     python openapi-json-to-html.py -i <inputfile> -t <title> -o <outputfile>
 
 Example:
-    python openapi-json-to-html.py -i openapi.json -t "Olist Code Challenge" -o index.html
+    python openapi-json-to-html.py -i openapi.json -t "Estrategia Educacional Code Challenge" -o index.html
 """
 
 import sys, getopt, json

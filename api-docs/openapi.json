@@ -2,8 +2,8 @@
     "openapi": "3.0.0",
     "info": {
         "version": "1.0.0",
-        "title": "Olist Code Challenge",
-        "description": "A REST API implemented using Go programming language and Postgres database which exposes HTTP routes to manage operations linked to author(s) and book(s).",
+        "title": "Estrategia Educacional Code Challenge",
+        "description": "A REST API implemented using Go programming language and Postgres database to manage operations linked to Github starred repositories and related tags.",
         "contact": {
             "name": "Icaro Ribeiro",
             "email": "icaroribeiro@hotmail.com"
@@ -17,16 +17,16 @@
             "description": "It refers to the operation linked to service status."
         },
         {
-            "name": "csv file",
-            "description": "It refers to the operation linked to csv file."
+            "name": "repository",
+            "description": "It refers to the operations linked to repositories."
         },
         {
-            "name": "author",
-            "description": "It refers to the operations linked to author(s)."
+            "name": "user repository",
+            "description": "It refers to the operations linked to user repositories."
         },
         {
-            "name": "book",
-            "description": "It refers to the operations linked to book(s)."
+            "name": "tag",
+            "description": "It refers to the operations linked to tags."
         }
     ],
     "paths": {
@@ -44,157 +44,56 @@
                 }
             }
         },
-        "/csv-file": {
-            "post": {
-                "tags": [
-                    "csv file"
-                ],
-                "summary": "API Endpoint designed to import data from csv file beyond the command line.",
-                "operationId": "UploadCSVFile",
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "filename": {
-                                        "type": "string",
-                                        "format": "binary"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation."
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/authors": {
+        "/users/{userId}/githubStarredRepositories": {
             "get": {
                 "tags": [
-                    "author"
+                    "user repository"
                 ],
-                "summary": "API Endpoint designed to get the paginated list of all authors.",
-                "operationId": "GetAllAuthors",
+                "summary": "API Endpoint designed to retrieve a list of all user's starred repositories from Github.",
+                "operationId": "GetAllGithubUserStarredRepositories",
                 "parameters": [{
-                        "name": "page_number",
-                        "in": "query",
-                        "description": "The number of the displayed page.",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "page_size",
-                        "in": "query",
-                        "description": "The number of items on the displayed page.",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "The name of the author(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "sort_param",
-                        "in": "query",
-                        "description": "The name of the parameter used in ordering the author(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "name"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "sort_order",
-                        "in": "query",
-                        "description": "The type used in ordering the author(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "asc",
-                                "desc"
-                            ]
-                        }
-                    }
-                ],
+					"name": "userId",
+					"in": "path",
+					"description": "The id of the user.",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}],
                 "responses": {
                     "200": {
                         "description": "Successful operation.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "page_number",
-                                        "page_size",
-                                        "total_count",
-                                        "listings"
-                                    ],
-                                    "properties": {
-                                        "page_number": {
-                                            "type": "integer"
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "description",
+                                            "url",
+                                            "language"
+                                        ],
+                                        "properties": {
+                                        "id": {
+                                            "type": "string"
                                         },
-                                        "page_size": {
-                                            "type": "integer"
+                                        "name": {
+                                            "type": "string"
                                         },
-                                        "total_count": {
-                                            "type": "integer"
+                                        "description": {
+                                            "type": "string"
                                         },
-                                        "listings": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "required": [
-                                                    "id",
-                                                    "name"
-                                                ],
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        }
                                         }
                                     }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
                                 }
                             }
                         }
@@ -202,607 +101,660 @@
                     "500": {
                         "description": "Got an internal application error.",
                         "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/book": {
-            "post": {
-                "tags": [
-                    "book"
-                ],
-                "summary": "API Endpoint designed to create a new book.",
-                "operationId": "CreateBook",
-                "requestBody": {
-                    "required": true,
-                    "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "required": [
-                                    "name",
-                                    "edition",
-                                    "publication_year",
-                                    "authors"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "edition": {
-                                        "type": "integer"
-                                    },
-                                    "publication_year": {
-                                        "type": "integer"
-                                    },
-                                    "authors": {
-                                        "description": "The list of the ids of all authors.",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                }
+                            "$ref": "#/components/schemas/Error"
                             }
                         }
+                        }
                     }
+                }
+            }
+        },
+
+
+
+
+
+        "/repositories/{repositoryId}": {
+            "get": {
+              "tags": [
+                "repository"
+              ],
+              "summary": "API Endpoint designed to retrieve a specific repository by its Id.",
+              "operationId": "GetRepository",
+              "parameters": [
+                {
+                  "name": "repositoryId",
+                  "in": "path",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful operation.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "description",
+                          "url",
+                          "language"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "language": {
+                            "type": "string"
+                          },
+                          "tags": {
+                            "type":"array",
+                            "items":{
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "name"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
-                "responses": {
-                    "201": {
-                        "description": "Successful operation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "edition",
-                                        "publication_year",
-                                        "authors"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "edition": {
-                                            "type": "integer"
-                                        },
-                                        "publication_year": {
-                                            "type": "integer"
-                                        },
-                                        "authors": {
-                                            "description": "The list of the ids of all authors.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "integer"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Got a not found error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
+                "400": {
+                  "description": "Got a bad request error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
                     }
+                  }
+                },
+                "404": {
+                  "description": "Got a not found error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                },
+                "409": {
+                  "description": "Got a conflict error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Got an internal application error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
                 }
-            }
-        },
-        "/books": {
-            "get": {
-                "tags": [
-                    "book"
-                ],
-                "summary": "API Endpoint designed to get the paginated list of all books.",
-                "operationId": "GetAllBooks",
-                "parameters": [{
-                        "name": "page_number",
-                        "in": "query",
-                        "description": "The number of the displayed page.",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "page_size",
-                        "in": "query",
-                        "description": "The number of items on the displayed page.",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "The name of the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "edition",
-                        "in": "query",
-                        "description": "The edition of the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "publication_year",
-                        "in": "query",
-                        "description": "The year of publication of the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "author",
-                        "in": "query",
-                        "description": "The name of the author of the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "sort_param",
-                        "in": "query",
-                        "description": "The name of the parameter used in ordering the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "name",
-                                "publication_year"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "sort_order",
-                        "in": "query",
-                        "description": "The type used in ordering the book(s).",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "asc",
-                                "desc"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "page_number",
-                                        "page_size",
-                                        "total_count",
-                                        "listings"
-                                    ],
-                                    "properties": {
-                                        "page_number": {
-                                            "type": "integer"
-                                        },
-                                        "page_size": {
-                                            "type": "integer"
-                                        },
-                                        "total_count": {
-                                            "type": "integer"
-                                        },
-                                        "listings": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "required": [
-                                                    "id",
-                                                    "name",
-                                                    "edition",
-                                                    "publication_year",
-                                                    "authors"
-                                                ],
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "edition": {
-                                                        "type": "integer"
-                                                    },
-                                                    "publication_year": {
-                                                        "type": "integer"
-                                                    },
-                                                    "authors": {
-                                                        "description": "The list of the ids of all authors.",
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "integer"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/books/{bookId}": {
-            "get": {
-                "tags": [
-                    "book"
-                ],
-                "summary": "API Endpoint designed to get a specific book by its id.",
-                "operationId": "GetBook",
-                "parameters": [{
-                    "name": "bookId",
-                    "in": "path",
-                    "description": "The id of the book.",
-                    "required": true,
-                    "schema": {
-                        "type": "integer"
-                    }
-                }],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "edition",
-                                        "publication_year",
-                                        "authors"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "edition": {
-                                            "type": "integer"
-                                        },
-                                        "publication_year": {
-                                            "type": "integer"
-                                        },
-                                        "authors": {
-                                            "description": "The list of the ids of all authors.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "integer"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Got a not found error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                }
+              }
             },
             "put": {
+              "tags": [
+                "repository"
+              ],
+              "summary": "API Endpoint designed to update a specific repository by its Id.",
+              "operationId": "UpdateRepository",
+              "parameters": [
+                {
+                  "name": "repositoryId",
+                  "in": "path",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "in": "body",
+                  "name": "body",
+                  "required": true,
+                  "schema": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "description",
+                      "url",
+                      "language"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      },
+                      "language": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful operation."
+                },
+                "400": {
+                  "description": "Got a bad request error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Got a not found error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                },
+                "409": {
+                  "description": "Got a conflict error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Got an internal application error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+        },
+
+        "/users/{userId}/repositories": {
+            "get": {
                 "tags": [
-                    "book"
+                "user repository"
                 ],
-                "summary": "API Endpoint designed to update a specific book by its id.",
-                "operationId": "UpdateBook",
-                "parameters": [{
-                    "name": "bookId",
+                "summary": "API Endpoint designed to retrieve a list of all user repositories.",
+                "operationId": "GetAllUserRepositories",
+                "parameters": [
+                {
+                    "name": "userId",
                     "in": "path",
-                    "description": "The id of the book.",
                     "required": true,
                     "schema": {
-                        "type": "integer"
-                    }
-                }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": [
-                                    "name",
-                                    "edition",
-                                    "publication_year",
-                                    "authors"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "edition": {
-                                        "type": "integer"
-                                    },
-                                    "publication_year": {
-                                        "type": "integer"
-                                    },
-                                    "authors": {
-                                        "description": "The list of the ids of all authors.",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "edition",
-                                        "publication_year",
-                                        "authors"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "edition": {
-                                            "type": "integer"
-                                        },
-                                        "publication_year": {
-                                            "type": "integer"
-                                        },
-                                        "authors": {
-                                            "description": "The list of the ids of all authors.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "integer"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Got a not found error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Got a conflict error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
+                    "type": "string"
                     }
                 }
-            },
-            "delete": {
-                "tags": [
-                    "book"
                 ],
-                "summary": "API Endpoint designed to delete a specific book by its id.",
-                "operationId": "DeleteBook",
-                "parameters": [{
-                    "name": "bookId",
-                    "in": "path",
-                    "description": "The id of the book.",
-                    "required": true,
-                    "schema": {
-                        "type": "integer"
-                    }
-                }],
                 "responses": {
-                    "200": {
-                        "description": "Successful operation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "edition",
-                                        "publication_year",
-                                        "authors"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer"
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "edition": {
-                                            "type": "integer"
-                                        },
-                                        "publication_year": {
-                                            "type": "integer"
-                                        },
-                                        "authors": {
-                                            "description": "The list of the ids of all authors.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "integer"
-                                            }
-                                        }
+                "200": {
+                    "description": "Successful operation.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "url",
+                            "language"
+                            ],
+                            "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "tags": {
+                                "type":"array",
+                                "items":{
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                    "type": "string"
+                                    },
+                                    "name": {
+                                    "type": "string"
                                     }
                                 }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Got a bad request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
                                 }
                             }
-                        }
-                    },
-                    "404": {
-                        "description": "Got a not found error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
                         }
                     }
+                    }
+                },
+                "204": {
+                    "description": "No content."
+                },
+                "409": {
+                    "description": "Got a conflict error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Got an internal application error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+        },
+        "/users/{userId}/repository": {
+            "post": {
+                "tags": [
+                "user repository"
+                ],
+                "summary": "API Endpoint designed to register a new user repository.",
+                "operationId": "CreateUserRepository",
+                "parameters": [
+                {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name",
+                        "description",
+                        "url",
+                        "language"
+                    ],
+                    "properties": {
+                        "id": {
+                        "type": "string"
+                        },
+                        "name": {
+                        "type": "string"
+                        },
+                        "description": {
+                        "type": "string"
+                        },
+                        "url": {
+                        "type": "string"
+                        },
+                        "language": {
+                        "type": "string"
+                        }
+                    }
+                    }
+                }
+                ],
+                "responses": {
+                "201": {
+                    "description": "Successful operation."
+                },
+                "400": {
+                    "description": "Got a bad request error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "409": {
+                    "description": "Got a conflict error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Got an internal application error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+        },
+        "/user/{userId}/repositories/{repositoryId}": {
+            "delete": {
+                "tags": [
+                "user repository"
+                ],
+                "summary": "API Endpoint designed to delete a specific user repository by its Id.",
+                "operationId": "DeleteUserRepository",
+                "parameters": [
+                {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "name": "repositoryId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                }
+                ],
+                "responses": {
+                "200": {
+                    "description": "Successful operation."
+                },
+                "400": {
+                    "description": "Got a bad request error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "404": {
+                    "description": "Got a not found error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "409": {
+                    "description": "Got a conflict error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Got an internal application error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+        },
+        "/users/{userId}/repositories/{repositoryId}/tag": {
+            "post": {
+                "tags": [
+                "tag"
+                ],
+                "summary": "API Endpoint designed to register a new tag.",
+                "operationId": "CreateTag",
+                "parameters": [
+                {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "name": "repositoryId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                    "type": "object",
+                    "required": [
+                        "name"
+                    ],
+                    "properties": {
+                        "name": {
+                        "type": "string"
+                        }
+                    }
+                    }
+                }
+                ],
+                "responses": {
+                "201": {
+                    "description": "Successful operation.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "name"
+                        ],
+                        "properties": {
+                            "id": {
+                            "type": "string"
+                            },
+                            "name": {
+                            "type": "string"
+                            }
+                        }
+                        }
+                    }
+                    }
+                },
+                "400": {
+                    "description": "Got a bad request error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "409": {
+                    "description": "Got a conflict error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Got an internal application error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+        },
+        "/users/{userId}/repositories/{repositoryId}/tags/{tagId}": {
+            "delete": {
+                "tags": [
+                "tag"
+                ],
+                "summary": "API Endpoint designed to delete a specific tag by its Id.",
+                "operationId": "DeleteTag",
+                "parameters": [
+                {
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "name": "repositoryId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                },
+                {
+                    "name": "tagId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                    "type": "string"
+                    }
+                }
+                ],
+                "responses": {
+                "200": {
+                    "description": "Successful operation."
+                },
+                "400": {
+                    "description": "Got a bad request error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "404": {
+                    "description": "Got a not found error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "409": {
+                    "description": "Got a conflict error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Got an internal application error.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                    }
+                }
                 }
             }
         }
-    },
+    },      
     "components": {
         "schemas": {
             "Error": {
