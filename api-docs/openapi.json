@@ -19,10 +19,6 @@
         {
             "name": "user repository",
             "description": "It refers to the operations linked to user repositories."
-        },
-        {
-            "name": "tag",
-            "description": "It refers to the operations linked to tags."
         }
     ],
     "paths": {
@@ -31,7 +27,7 @@
                 "tags": [
                     "status"
                 ],
-                "summary": "API Endpoint designed to verify if the service has started up correctly and is ready to accept requests.",
+                "summary": "API endpoint designed to verify if the service has started up correctly and is ready to accept requests.",
                 "operationId": "GetStatus",
                 "responses": {
                     "200": {
@@ -45,7 +41,7 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API Endpoint designed to retrieve the list of all user's starred repositories from Github.",
+                "summary": "API endpoint designed to retrieve the list of all user's starred repositories from Github.",
                 "operationId": "GetAllGithubUserStarredRepositories",
                 "parameters": [{
                         "name": "userId",
@@ -113,7 +109,7 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API Endpoint designed to register a new user repository.",
+                "summary": "API endpoint designed to register a new user repository.",
                 "operationId": "CreateUserRepository",
                 "parameters": [{
                         "name": "userId",
@@ -212,7 +208,7 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API Endpoint designed to retrieve the list of all user's repositories.",
+                "summary": "API endpoint designed to retrieve the list of all user's repositories.",
                 "operationId": "GetAllUserRepositories",
                 "parameters": [{
                         "name": "userId",
@@ -255,6 +251,12 @@
                                             },
                                             "language": {
                                                 "type": "string"
+                                            },
+                                            "tags": {
+                                                "type":"array",
+                                                "items":{
+                                                    "type": "string"
+                                                }
                                             }
                                         }
                                     }
@@ -276,12 +278,12 @@
             }
         },
         "/user/{userId}/repositories/{repositoryId}": {
-            "delete": {
+            "put": {
                 "tags": [
-                "user repository"
+                    "user repository"
                 ],
-                "summary": "API Endpoint designed to delete a specific user repository by its id.",
-                "operationId": "DeleteUserRepository",
+                "summary": "API endpoint designed to update a specific user repository by its id.",
+                "operationId": "CreateUserRepository",
                 "parameters": [{
                         "name": "userId",
                         "in": "path",
@@ -289,58 +291,6 @@
                         "required": true,
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "name": "repositoryId",
-                        "in": "path",
-                        "description": "The id of the repository.",
-                        "required": true,
-                        "schema": {
-                        "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation."
-                    },
-                    "500": {
-                        "description": "Got an internal application error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{userId}/repositories/{repositoryId}/tag": {
-            "post": {
-                "tags": [
-                    "tag"
-                ],
-                "summary": "API Endpoint designed to register a new tag.",
-                "operationId": "CreateTag",
-                "parameters": [{
-                        "name": "userId",
-                        "in": "path",
-                        "description": "The id of the user.",
-                        "required": true,
-                        "schema": {
-                        "type": "string"
-                        }
-                    },
-                    {
-                        "name": "repositoryId",
-                        "in": "path",
-                        "description": "The id of the repository.",
-                        "required": true,
-                        "schema": {
-                        "type": "string"
                         }
                     }
                 ],
@@ -351,34 +301,72 @@
                             "schema": {
                                 "type": "object",
                                 "required": [
-                                    "name"
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "url",
+                                    "language"
                                 ],
                                 "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
                                     "name": {
                                         "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "language": {
+                                        "type": "string"
+                                    },
+                                    "tags": {
+                                        "type":"array",
+                                        "items":{
+                                            "type": "string"
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                },
+                },                
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Successful operation.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "schema": {
-                                        "type": "object",
-                                        "required": [
-                                            "id",
-                                            "name"
-                                        ],
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer"
-                                            },
-                                            "name": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "url",
+                                        "language"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "type":"array",
+                                            "items":{
                                                 "type": "string"
                                             }
                                         }
@@ -398,22 +386,20 @@
                         }
                     }
                 }
-            }
-        },
-        "/users/{userId}/repositories/{repositoryId}/tags/{tagId}": {
+            },
             "delete": {
                 "tags": [
-                    "tag"
+                "user repository"
                 ],
-                "summary": "API Endpoint designed to delete a specific tag by its id.",
-                "operationId": "DeleteTag",
+                "summary": "API endpoint designed to delete a specific user repository by its id.",
+                "operationId": "DeleteUserRepository",
                 "parameters": [{
                         "name": "userId",
                         "in": "path",
                         "description": "The id of the user.",
                         "required": true,
                         "schema": {
-                        "type": "string"
+                            "type": "string"
                         }
                     },
                     {
@@ -423,15 +409,6 @@
                         "required": true,
                         "schema": {
                         "type": "string"
-                        }
-                    },
-                    {
-                        "name": "tagId",
-                        "in": "path",
-                        "description": "The id of the tag.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 ],
