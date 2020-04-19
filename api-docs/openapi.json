@@ -17,10 +17,6 @@
             "description": "It refers to the operation linked to service status."
         },
         {
-            "name": "repository",
-            "description": "It refers to the operations linked to repositories."
-        },
-        {
             "name": "user repository",
             "description": "It refers to the operations linked to user repositories."
         },
@@ -49,17 +45,18 @@
                 "tags": [
                     "user repository"
                 ],
-                "summary": "API Endpoint designed to retrieve a list of all user's starred repositories from Github.",
+                "summary": "API Endpoint designed to retrieve the list of all user's starred repositories from Github.",
                 "operationId": "GetAllGithubUserStarredRepositories",
                 "parameters": [{
-					"name": "userId",
-					"in": "path",
-					"description": "The id of the user.",
-					"required": true,
-					"schema": {
-						"type": "string"
-					}
-				}],
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation.",
@@ -77,6 +74,106 @@
                                             "language"
                                         ],
                                         "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            },
+                                            "language": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/repository": {
+            "post": {
+                "tags": [
+                    "user repository"
+                ],
+                "summary": "API Endpoint designed to register a new user repository.",
+                "operationId": "CreateUserRepository",
+                "parameters": [{
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "url",
+                                    "language"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "language": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },                
+                "responses": {
+                    "201": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "url",
+                                        "language"
+                                    ],
+                                    "properties": {
                                         "id": {
                                             "type": "string"
                                         },
@@ -92,6 +189,73 @@
                                         "language": {
                                             "type": "string"
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/repositories": {
+            "get": {
+                "tags": [
+                    "user repository"
+                ],
+                "summary": "API Endpoint designed to retrieve the list of all user's repositories.",
+                "operationId": "GetAllUserRepositories",
+                "parameters": [{
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "description",
+                                            "url",
+                                            "language"
+                                        ],
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            },
+                                            "language": {
+                                                "type": "string"
+                                            }
                                         }
                                     }
                                 }
@@ -101,407 +265,13 @@
                     "500": {
                         "description": "Got an internal application error.",
                         "content": {
-                        "application/json": {
-                            "schema": {
-                            "$ref": "#/components/schemas/Error"
-                            }
-                        }
-                        }
-                    }
-                }
-            }
-        },
-
-
-
-
-
-        "/repositories/{repositoryId}": {
-            "get": {
-              "tags": [
-                "repository"
-              ],
-              "summary": "API Endpoint designed to retrieve a specific repository by its Id.",
-              "operationId": "GetRepository",
-              "parameters": [
-                {
-                  "name": "repositoryId",
-                  "in": "path",
-                  "required": true,
-                  "schema": {
-                    "type": "string"
-                  }
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "Successful operation.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "name",
-                          "description",
-                          "url",
-                          "language"
-                        ],
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string"
-                          },
-                          "url": {
-                            "type": "string"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "tags": {
-                            "type":"array",
-                            "items":{
-                              "type": "object",
-                              "required": [
-                                "id",
-                                "name"
-                              ],
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "name": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400": {
-                  "description": "Got a bad request error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "404": {
-                  "description": "Got a not found error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "409": {
-                  "description": "Got a conflict error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "500": {
-                  "description": "Got an internal application error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "put": {
-              "tags": [
-                "repository"
-              ],
-              "summary": "API Endpoint designed to update a specific repository by its Id.",
-              "operationId": "UpdateRepository",
-              "parameters": [
-                {
-                  "name": "repositoryId",
-                  "in": "path",
-                  "required": true,
-                  "schema": {
-                    "type": "string"
-                  }
-                },
-                {
-                  "in": "body",
-                  "name": "body",
-                  "required": true,
-                  "schema": {
-                    "type": "object",
-                    "required": [
-                      "name",
-                      "description",
-                      "url",
-                      "language"
-                    ],
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "type": "string"
-                      },
-                      "url": {
-                        "type": "string"
-                      },
-                      "language": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "Successful operation."
-                },
-                "400": {
-                  "description": "Got a bad request error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "404": {
-                  "description": "Got a not found error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "409": {
-                  "description": "Got a conflict error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                },
-                "500": {
-                  "description": "Got an internal application error.",
-                  "content": {
-                    "application/json": {
-                      "schema": {
-                        "$ref": "#/components/schemas/Error"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-        },
-
-        "/users/{userId}/repositories": {
-            "get": {
-                "tags": [
-                "user repository"
-                ],
-                "summary": "API Endpoint designed to retrieve a list of all user repositories.",
-                "operationId": "GetAllUserRepositories",
-                "parameters": [
-                {
-                    "name": "userId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                }
-                ],
-                "responses": {
-                "200": {
-                    "description": "Successful operation.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": [
-                            "id",
-                            "name",
-                            "description",
-                            "url",
-                            "language"
-                            ],
-                            "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            },
-                            "url": {
-                                "type": "string"
-                            },
-                            "language": {
-                                "type": "string"
-                            },
-                            "tags": {
-                                "type":"array",
-                                "items":{
-                                "type": "object",
-                                "required": [
-                                    "id",
-                                    "name"
-                                ],
-                                "properties": {
-                                    "id": {
-                                    "type": "string"
-                                    },
-                                    "name": {
-                                    "type": "string"
-                                    }
-                                }
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
                                 }
                             }
-                            }
-                        }
                         }
                     }
-                    }
-                },
-                "204": {
-                    "description": "No content."
-                },
-                "409": {
-                    "description": "Got a conflict error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "500": {
-                    "description": "Got an internal application error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                }
-                }
-            }
-        },
-        "/users/{userId}/repository": {
-            "post": {
-                "tags": [
-                "user repository"
-                ],
-                "summary": "API Endpoint designed to register a new user repository.",
-                "operationId": "CreateUserRepository",
-                "parameters": [
-                {
-                    "name": "userId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                },
-                {
-                    "in": "body",
-                    "name": "body",
-                    "required": true,
-                    "schema": {
-                    "type": "object",
-                    "required": [
-                        "id",
-                        "name",
-                        "description",
-                        "url",
-                        "language"
-                    ],
-                    "properties": {
-                        "id": {
-                        "type": "string"
-                        },
-                        "name": {
-                        "type": "string"
-                        },
-                        "description": {
-                        "type": "string"
-                        },
-                        "url": {
-                        "type": "string"
-                        },
-                        "language": {
-                        "type": "string"
-                        }
-                    }
-                    }
-                }
-                ],
-                "responses": {
-                "201": {
-                    "description": "Successful operation."
-                },
-                "400": {
-                    "description": "Got a bad request error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "409": {
-                    "description": "Got a conflict error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "500": {
-                    "description": "Got an internal application error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                }
                 }
             }
         },
@@ -510,251 +280,179 @@
                 "tags": [
                 "user repository"
                 ],
-                "summary": "API Endpoint designed to delete a specific user repository by its Id.",
+                "summary": "API Endpoint designed to delete a specific user repository by its id.",
                 "operationId": "DeleteUserRepository",
-                "parameters": [
-                {
-                    "name": "userId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
+                "parameters": [{
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
+                        "required": true,
+                        "schema": {
+                        "type": "string"
+                        }
                     }
-                },
-                {
-                    "name": "repositoryId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                }
                 ],
                 "responses": {
-                "200": {
-                    "description": "Successful operation."
-                },
-                "400": {
-                    "description": "Got a bad request error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
+                    "200": {
+                        "description": "Successful operation."
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
                         }
                     }
-                    }
-                },
-                "404": {
-                    "description": "Got a not found error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "409": {
-                    "description": "Got a conflict error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "500": {
-                    "description": "Got an internal application error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                }
                 }
             }
         },
         "/users/{userId}/repositories/{repositoryId}/tag": {
             "post": {
                 "tags": [
-                "tag"
+                    "tag"
                 ],
                 "summary": "API Endpoint designed to register a new tag.",
                 "operationId": "CreateTag",
-                "parameters": [
-                {
-                    "name": "userId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                },
-                {
-                    "name": "repositoryId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                },
-                {
-                    "in": "body",
-                    "name": "body",
-                    "required": true,
-                    "schema": {
-                    "type": "object",
-                    "required": [
-                        "name"
-                    ],
-                    "properties": {
-                        "name": {
+                "parameters": [{
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                        "type": "string"
+                        }
+                    },
+                    {
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
+                        "required": true,
+                        "schema": {
                         "type": "string"
                         }
                     }
-                    }
-                }
                 ],
-                "responses": {
-                "201": {
-                    "description": "Successful operation.",
+                "requestBody": {
+                    "required": true,
                     "content": {
-                    "application/json": {
-                        "schema": {
-                        "type": "object",
-                        "required": [
-                            "id",
-                            "name"
-                        ],
-                        "properties": {
-                            "id": {
-                            "type": "string"
-                            },
-                            "name": {
-                            "type": "string"
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
                             }
                         }
-                        }
-                    }
                     }
                 },
-                "400": {
-                    "description": "Got a bad request error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
+                "responses": {
+                    "201": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "schema": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "name"
+                                        ],
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
                         }
                     }
-                    }
-                },
-                "409": {
-                    "description": "Got a conflict error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "500": {
-                    "description": "Got an internal application error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                }
                 }
             }
         },
         "/users/{userId}/repositories/{repositoryId}/tags/{tagId}": {
             "delete": {
                 "tags": [
-                "tag"
+                    "tag"
                 ],
-                "summary": "API Endpoint designed to delete a specific tag by its Id.",
+                "summary": "API Endpoint designed to delete a specific tag by its id.",
                 "operationId": "DeleteTag",
-                "parameters": [
-                {
-                    "name": "userId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
+                "parameters": [{
+                        "name": "userId",
+                        "in": "path",
+                        "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                        "type": "string"
+                        }
+                    },
+                    {
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
+                        "required": true,
+                        "schema": {
+                        "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tagId",
+                        "in": "path",
+                        "description": "The id of the tag.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
-                },
-                {
-                    "name": "repositoryId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                },
-                {
-                    "name": "tagId",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                    "type": "string"
-                    }
-                }
                 ],
                 "responses": {
-                "200": {
-                    "description": "Successful operation."
-                },
-                "400": {
-                    "description": "Got a bad request error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
+                    "200": {
+                        "description": "Successful operation."
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
                         }
                     }
-                    }
-                },
-                "404": {
-                    "description": "Got a not found error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "409": {
-                    "description": "Got a conflict error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                },
-                "500": {
-                    "description": "Got an internal application error.",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                    }
-                }
                 }
             }
         }
-    },      
+    },
     "components": {
         "schemas": {
             "Error": {
