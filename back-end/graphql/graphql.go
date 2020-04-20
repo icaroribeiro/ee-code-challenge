@@ -59,7 +59,7 @@ func GetStarredRepositories(token string, login string) ([]models.Repository, er
         return repositories, err
     }
 
-    // Retrieve the last 100 starred repositories.
+    // Get the last 100 starred repositories.
     totalRepositoriesNumber = query.User.StarredRepositories.TotalCount
 
     if totalRepositoriesNumber > 100 {
