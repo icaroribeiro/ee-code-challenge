@@ -9,6 +9,7 @@ import (
 )
 
 const (
+    QueryGetUserRepository = "GetUserRepository"
     QueryGetAllUserRepositoriesByUserId = "GetAllUserRepositoriesByUserId"
     QueryGetAllUserRepositoriesByRepositoryId = "GetAllUserRepositoriesByRepositoryId"
     QueryGetRepository = "GetRepository"
@@ -20,6 +21,12 @@ func AddGetAllUserRepositoriesStatements(unpreparedStmts map[string]string) {
     var value string
 
     stmts = map[string]string{
+        QueryGetUserRepository: `
+            SELECT user_id, repository_id, tags
+            FROM user_repositories
+            WHERE user_id = $1 and repository_id = $2;
+        `,
+
         QueryGetAllUserRepositoriesByUserId: `
             SELECT user_id, repository_id, tags
             FROM user_repositories
@@ -44,6 +51,41 @@ func AddGetRepositoryStatement(unpreparedStmts map[string]string) {
             FROM repositories
             WHERE id = $1;
         `
+}
+
+func (d *Datastore) GetUserRepository(userId string, repositoryId string) (models.UserRepository, error) {
+    var err error
+    var userRepository models.UserRepository
+    var dataArray []sql.NullString
+    var data sql.NullString
+    var isOK bool
+    var tag string
+    var value driver.Value
+
+    err = d.Stmts[QueryGetUserRepository].QueryRow(userId, repositoryId).Scan(&userRepository.UserID, 
+                                                &userRepository.RepositoryID,
+                                                pq.Array(&dataArray))
+    
+    // Complete the list of all tags.
+    for _, data = range dataArray {
+        value, err = data.Value()
+
+        tag, isOK = value.(string)
+
+        if !isOK {
+            return userRepository, fmt.Errorf("it wasn't possible to get data from the list of all tags")
+        }
+
+        userRepository.Tags = append(userRepository.Tags, tag)
+    }
+    
+    if err != nil {
+        if err != sql.ErrNoRows {
+            return userRepository, err
+        }
+    }
+
+    return userRepository, nil
 }
 
 func (d *Datastore) GetAllUserRepositoriesByUserId(userId string) ([]models.UserRepository, error) {
@@ -76,7 +118,7 @@ func (d *Datastore) GetAllUserRepositoriesByUserId(userId string) ([]models.User
     
             if !isOK {
                 return userRepositories, 
-                    fmt.Errorf("it wasn't possible to get data from the list of the ids of all authors")
+                    fmt.Errorf("it wasn't possible to get data from the list of all tags")
             }
     
             userRepository.Tags = append(userRepository.Tags, tag)
@@ -122,7 +164,7 @@ func (d *Datastore) GetAllUserRepositoriesByRepositoryId(repositoryId string) ([
     
             if !isOK {
                 return userRepositories, 
-                    fmt.Errorf("it wasn't possible to get data from the list of the ids of all authors")
+                    fmt.Errorf("it wasn't possible to get data from the list of all tags")
             }
     
             userRepository.Tags = append(userRepository.Tags, tag)

@@ -36,12 +36,83 @@
                 }
             }
         },
+        "/repositories/{repositoryId}": {
+            "get": {
+                "tags": [
+                    "repository"
+                ],
+                "summary": "API endpoint designed to get a specific repository by its id.",
+                "operationId": "GetRepository",
+                "parameters": [{
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "url",
+                                        "language"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "type":"array",
+                                            "items":{
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/githubStarredRepositories": {
             "get": {
                 "tags": [
                     "repository"
                 ],
-                "summary": "API endpoint designed to retrieve the list of all user Github starred repositories.",
+                "summary": "API endpoint designed to get the list of all user Github starred repositories.",
                 "operationId": "GetAllUserGithubStarredRepositories",
                 "parameters": [{
                         "name": "userId",
@@ -208,7 +279,7 @@
                 "tags": [
                     "repository"
                 ],
-                "summary": "API endpoint designed to retrieve the list of all user repositories.",
+                "summary": "API endpoint designed to get the list of all user repositories.",
                 "operationId": "GetAllUserRepositories",
                 "parameters": [{
                         "name": "userId",
