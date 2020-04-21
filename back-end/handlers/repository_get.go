@@ -1,195 +1,159 @@
 package handlers
 
 import (
-    //"fmt"
-    //"github.com/gorilla/mux"
-    //"github.com/icaroribeiro/ee-code-challenge/back-end/models"
+    "fmt"
+    "github.com/gorilla/mux"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/graphql"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/models"
     "github.com/icaroribeiro/ee-code-challenge/back-end/server"
-    //"github.com/icaroribeiro/ee-code-challenge/back-end/services"
-    //"github.com/icaroribeiro/ee-code-challenge/back-end/utils"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/utils"
     "net/http"
-    //"strconv"
 )
 
-func GetAllUserGithubStarredRepositories(s *server.Server) http.HandlerFunc {
+func GetRepository(s *server.Server) http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        /*
-        var filter services.Filter
+        var params map[string]string
+        var repositoryId string
+        var repository models.Repository
         var err error
-        var filtersMap map[string]interface{}
-        var authors []models.Author
-        var authorFilter map[string]interface{}
-        var author models.Author
-        var authorsIds []int
-        var sort services.Sort
-        var ordersMap map[string]string
-        var books []models.Book
-        var totalCount int
-        var pagination models.Pagination
-        var page services.Page
-        var numberOfSkippedRecords int
-        var i int
-        var listings []interface{}
+        var userRepositories []models.UserRepository
+        var tagMap map[string]bool
+        var userRepository models.UserRepository
+        var tags []string
+        var tag string
+        var tagsAux[]string
 
-        // Filtering scheme.
-        filter, err = services.GetFilter(r.URL.Query())
+        params = mux.Vars(r)
 
-        if err != nil {
-            utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the filtering fields from the URL: %s", err.Error())})
+        repositoryId = params["repositoryId"]
+
+        if repositoryId == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The repository id is required and must be set to a non-empty value in the request URL"})
             return
         }
 
-        // Prepare the filtering fields.
-        filtersMap = make(map[string]interface{})
+        repository, err = s.Datastore.GetRepository(repositoryId)
 
-        if !filter.IsEmpty() {
-            if filter.Name != "" {
-                filtersMap["name"] = filter.Name
-            }
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with id %s: %s", repositoryId, err.Error())})
+            return
+        }
 
-            if filter.Edition != 0 {
-                filtersMap["edition"] = filter.Edition
-            }
+        if repository.ID == "" {
+            utils.RespondWithJson(w, http.StatusNotFound, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with the id %s: the repository wasn't found", repositoryId)})
+            return
+        }
+        
+        userRepositories, err = s.Datastore.GetAllUserRepositoriesByRepositoryId(repositoryId)
 
-            if filter.PublicationYear != 0 {
-                filtersMap["publication_year"] = filter.PublicationYear
-            }
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with the repository id %s: %s", repositoryId, err.Error())})
+            return
+        }
 
-            // Filter the books by the name of their authors.
-            if filter.Author != "" {
-                authorFilter = make(map[string]interface{})
+        tagMap = make(map[string]bool)
 
-                authorFilter["name"] = filter.Author
+        for _, userRepository = range userRepositories {
+            tags = userRepository.Tags
 
-                authors, err = s.Datastore.GetAllAuthors(authorFilter, nil)
-
-                if len(authors) > 0 {
-                    for _, author = range authors {
-                        authorsIds = append(authorsIds, author.ID)
-                    }
-
-                    filtersMap["authors"] = authorsIds
+            for _, tag = range tags {
+                if !(tagMap[tag]) {   
+                    tagMap[tag] = true
+                    tagsAux = append(tagsAux, tag)
                 }
             }
         }
 
-        // Ordering scheme.
-        sort, err = services.GetOrder(r.URL.Query())
-
-        if err != nil {
-            utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the ordering fields from the URL: %s", err.Error())})
-            return
+        if len(tagsAux) > 0 {
+            repository.Tags = tagsAux
         }
 
-        // Prepare the ordering fields.
-        ordersMap = make(map[string]string)
+        utils.RespondWithJson(w, http.StatusOK, repository)
+    })
+}
 
-        if !sort.IsEmpty() {
-            switch sort.Param {
-            case "id", "name", "publication_year":
-                ordersMap[sort.Param] = sort.Order
-            default:
-            }
-        }
+func GetAllUserGithubStarredRepositories(s *server.Server) http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        var params map[string]string
+        var userId string
+        var repositories []models.Repository
+        var err error
 
-        // Get all records by using the filtering and ordering settings.
-        books, err = s.Datastore.GetAllBooks(filtersMap, ordersMap)
+        params = mux.Vars(r)
 
-        if err != nil {
-            utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the list of all books: %s", err.Error())})
-            return
-        }
+        userId = params["userId"]
 
-        totalCount = len(books)
-
-        if totalCount == 0 {
-            pagination = models.Pagination{
-                PageNumber: 1,
-                PageSize:   0,
-                TotalCount: 0,
-                Listings:   nil,
-            }
-
-            utils.RespondWithJson(w, http.StatusOK, pagination)
-            return
-        }
-
-        // Pagination scheme.
-        page, err = services.GetPage(r.URL.Query())
-
-        if err != nil {
+        if userId == "" {
             utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the pagination fields from the URL: %s", err.Error())})
+                map[string]string{"error": "The user id is required and must be set to a non-empty value in the request URL"})
             return
         }
 
-        // Prepare the pagination fields.
-        if page.IsEmpty() {
-            page.Number = 1
-            page.Size = totalCount
-        } else {
-            services.DefinePaginationSettings(totalCount, &page, &numberOfSkippedRecords)
+        repositories, err = graphql.GetAllUserGithubStarredRepositories(s.Token, userId)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the Github starred repositories of the user " + 
+                    "with username %s: %s", userId, err.Error())})
+            return
         }
 
-        // In the case of there is no skip, the numberOfSkippedRecords is 0 and
-        // therefore the records will be gathered from the beginning.
-        for i = numberOfSkippedRecords; i < (page.Size + numberOfSkippedRecords) ; i++ {
-            listings = append(listings, books[i])
-        }
-
-        pagination = models.Pagination{
-            PageNumber: page.Number,
-            PageSize:   page.Size,
-            TotalCount: totalCount,
-            Listings:   listings,
-        }
-
-        utils.RespondWithJson(w, http.StatusOK, pagination)
-        */
+        utils.RespondWithJson(w, http.StatusOK, repositories)
     })
 }
 
 func GetAllUserRepositories(s *server.Server) http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        /*var params map[string]string
-        var bookId int
-        var book models.Book
+        var params map[string]string
+        var userId string
+        var userRepositories []models.UserRepository
         var err error
+        var userRepository models.UserRepository
+        var repository models.Repository
+        var repositories []models.Repository
 
         params = mux.Vars(r)
 
-        if params["bookId"] == "" {
+        userId = params["userId"]
+
+        if userId == "" {
             utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The id is required and must be set to a non-empty value in the request URL"})
+                map[string]string{"error": "The user id is required and must be set to a non-empty value in the request URL"})
             return
         }
 
-        bookId, err = strconv.Atoi(params["bookId"])
-
-        if err != nil {
-            utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": fmt.Sprintf("Failed to convert the string %s to a numeric value", params["bookId"])})
-            return
-        }
-
-        book, err = s.Datastore.GetBook(bookId)
+        userRepositories, err = s.Datastore.GetAllUserRepositoriesByUserId(userId)
 
         if err != nil {
             utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the book with the id %d: %s", bookId, err.Error())})
+                map[string]string{"error": fmt.Sprintf("Failed to get the user repositories with user id %s: %s", userId, err.Error())})
             return
         }
 
-        if book.ID == 0 {
-            utils.RespondWithJson(w, http.StatusNotFound, 
-                map[string]string{"error": fmt.Sprintf("Failed to get the book with the id %d: the book wasn't found", bookId)})
-            return
+        for _, userRepository = range userRepositories {
+            repository, err = s.Datastore.GetRepository(userRepository.RepositoryID)
+
+            if err != nil {
+                utils.RespondWithJson(w, http.StatusInternalServerError, 
+                    map[string]string{"error": fmt.Sprintf("Failed to get the repository with id %s: %s", userRepository.RepositoryID, err.Error())})
+                return
+            }
+    
+            if repository.ID == "" {
+                utils.RespondWithJson(w, http.StatusNotFound, 
+                    map[string]string{"error": fmt.Sprintf("Failed to get the repository with the id %s: the repository wasn't found", userRepository.RepositoryID)})
+                return
+            }
+
+            repository.Tags = userRepository.Tags
+
+            repositories = append(repositories, repository)
         }
 
-        utils.RespondWithJson(w, http.StatusOK, book)
-        */
+        utils.RespondWithJson(w, http.StatusOK, repositories)
     })
 }

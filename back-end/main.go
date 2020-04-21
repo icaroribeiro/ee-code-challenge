@@ -21,6 +21,9 @@ func init() {
 
     envVariablesMap = make(map[string]string)
 
+    // The environment variable of the personal access token required to authenticate to Github.
+    envVariablesMap["GITHUB_PERSONAL_ACCESS_TOKEN"] = ""
+
     // The environment variables related to the database settings.
     envVariablesMap["DB_USERNAME"] = ""
     envVariablesMap["DB_PASSWORD"] = ""
@@ -43,11 +46,14 @@ func init() {
 }
 
 func main() {
+    var token string
     var dbConfig postgresdb.DBConfig
     var s server.Server
     var err error
     var r *mux.Router
     var httpAddress string
+
+    token = envVariablesMap["GITHUB_PERSONAL_ACCESS_TOKEN"]
 
     dbConfig = postgresdb.DBConfig{
         Username: envVariablesMap["DB_USERNAME"],
@@ -58,7 +64,7 @@ func main() {
     }
 
     // Create the server.
-    s, err = server.CreateServer(dbConfig)
+    s, err = server.CreateServer(token, dbConfig)
 
     if err != nil {
         log.Fatal("Failed to configure the server: ", err.Error())

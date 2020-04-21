@@ -29,7 +29,7 @@ type StarredRepositoryEdge struct {
     }
 }
 
-func GetStarredRepositories(token string, login string) ([]models.Repository, error) {
+func GetAllUserGithubStarredRepositories(token string, login string) ([]models.Repository, error) {
     var tokenSource oauth2.TokenSource
     var httpClient *http.Client
     var client *githubv4.Client

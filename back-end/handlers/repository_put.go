@@ -1,47 +1,49 @@
 package handlers
 
 import (
-    //"encoding/json"
-    //"fmt"
-    //"github.com/gorilla/mux"
-    //"github.com/icaroribeiro/ee-code-challenge/back-end/models"
+    "encoding/json"
+    "fmt"
+    "github.com/gorilla/mux"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/models"
     "github.com/icaroribeiro/ee-code-challenge/back-end/server"
-    //"github.com/icaroribeiro/ee-code-challenge/back-end/utils"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/utils"
     "net/http"
     //"strconv"
 )
 
 func UpdateUserRepository(s *server.Server) http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        /*
         var params map[string]string
-        var bookId int
+        var userId string
+        var repositoryId string
         var err error
-        var book models.Book
+        var userRepository models.UserRepository
         var body string
-        var authorsMap map[int]bool
+        var tagMap map[string]bool
         var i int
-        var authorId int
-        var author models.Author
+        var tag string
         var nRowsAffected int64
+        var repository models.Repository
 
         params = mux.Vars(r)
 
-        if params["bookId"] == "" {
+        userId = params["userId"]
+
+        if userId == "" {
             utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The id is required and must be set to a non-empty value in the request URL"})
+                map[string]string{"error": "The user id is required and must be set to a non-empty value in the request URL"})
             return
         }
 
-        bookId, err = strconv.Atoi(params["bookId"])
+        repositoryId = params["repositoryId"]
 
-        if err != nil {
+        if repositoryId == "" {
             utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": fmt.Sprintf("Failed to convert the string %s to a numeric value", params["bookId"])})
+                map[string]string{"error": "The repository id is required and must be set to a non-empty value in the request URL"})
             return
         }
 
-        err = json.NewDecoder(r.Body).Decode(&book)
+        err = json.NewDecoder(r.Body).Decode(&userRepository)
 
         if err != nil {
             utils.RespondWithJson(w, http.StatusInternalServerError, 
@@ -49,97 +51,76 @@ func UpdateUserRepository(s *server.Server) http.HandlerFunc {
             return
         }
 
-        if book.Name == "" {
+        if len(userRepository.Tags) == 0 {
             utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The name field is required and must be set to a non-empty value"})
+                map[string]string{"error": "The tags field is required and must be set to an array containing " +
+                    "at least one tag"})
             return
         }
 
-        if book.Edition <= 0 {
-            utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The edition field is required and must be set to a value greater than 0"})
-            return
-        }
+        body = fmt.Sprintf(`{`)
 
-        if book.PublicationYear < 1 || book.PublicationYear > 9999 {
-            utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The publication year field is required and must be set to a value " +
-                    "in the range from 1 to 9999"})
-            return
-        }
+        // Verify if all the tags associated with the repository are valid.
+        // Additionally, checks if there are no duplicate tags.
+        tagMap = make(map[string]bool)
 
-        if len(book.Authors) == 0 {
-            utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The authors field is required and must be set to an array containing " +
-                    "at least one author id"})
-            return
-        }
-
-        body = fmt.Sprintf(`{"name":"%s","edition":%d,"publication_year":%d`,
-            book.Name, book.Edition, book.PublicationYear)
-
-        // Verify if all the ids of the authors associated with the book are valid.
-        // Additionally, checks if there are no duplicate ids of the authors.
-        authorsMap = make(map[int]bool)
-
-        for i, authorId = range book.Authors {
-            author, err = s.Datastore.GetAuthor(authorId)
-
-            if err != nil {
-                utils.RespondWithJson(w, http.StatusInternalServerError, 
-                    map[string]string{"error": fmt.Sprintf("Failed to add the author with id %d: %s", authorId, err.Error())})
-                return
-            }
-
-            if author.ID == 0 {
+        for _, tag = range userRepository.Tags {
+            if tag == "" {
                 utils.RespondWithJson(w, http.StatusNotFound, 
-                    map[string]string{"error": fmt.Sprintf("Failed to add the author with id %d: the author wasn't found", authorId)})
+                    map[string]string{"error": fmt.Sprintf("Failed to add one of the tags: there is an empty value")})
                 return
             }
 
-            if !(authorsMap[author.ID]) {
-                authorsMap[author.ID] = true
+            if !(tagMap[tag]) {
+                tagMap[tag] = true
             } else {
                 utils.RespondWithJson(w, http.StatusBadRequest, 
-                    map[string]string{"error": fmt.Sprintf("Failed to add the author with id %d: the id is duplicated", author.ID)})
+                    map[string]string{"error": fmt.Sprintf("Failed to add the tag %s: the tag is duplicated", tag)})
                 return
             }
 
             if i == 0 {
-                body += fmt.Sprintf(`,"authors":[%d`, author.ID)
+                body += fmt.Sprintf(`"tags":["%s"`, tag)
             } else {
-                body += fmt.Sprintf(`,%d`, author.ID)
+                body += fmt.Sprintf(`,"%s"`, tag)
             }
         }
 
         body += `]}`
 
-        nRowsAffected, err = s.Datastore.UpdateBook(bookId, book)
+        nRowsAffected, err = s.Datastore.UpdateUserRepository(userId, repositoryId, userRepository)
 
         if err != nil {
             utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to update the book with the id %d with %s: %s", 
-                    bookId, body, err.Error())})
+                map[string]string{"error": fmt.Sprintf("Failed to update the user repository with the user id %s and repository id %s with %s: %s", 
+                    userId, repositoryId, body, err.Error())})
             return
         }
 
-        book.ID = bookId
-
         if nRowsAffected == 0 {
             utils.RespondWithJson(w, http.StatusConflict, 
-                map[string]string{"error": fmt.Sprintf("Failed to update the book with the id %d with %s: " +
-                    "the book wasn't found", bookId, body)})
+                map[string]string{"error": fmt.Sprintf("Failed to update the user repository with the user id %s and repository id %s with %s: " + 
+                    "the user repository wasn't found", userId, repositoryId, body)})
             return
         }
 
         if nRowsAffected != 1 {
             utils.RespondWithJson(w, http.StatusInternalServerError, 
-                map[string]string{"error": fmt.Sprintf("Failed to update the book with the id %d with %s: " + 
-                    "the expected number of books updated: %d, got: %d", bookId, body, 1, nRowsAffected)})
+                map[string]string{"error": fmt.Sprintf("Failed to update the user repository with the user id %s and repository id %s with %s: " + 
+                    "the expected number of user repositories updated: %d, got: %d", userId, repositoryId, body, 1, nRowsAffected)})
             return
         }
 
-        utils.RespondWithJson(w, http.StatusOK, book)
-        */
+        repository, err = s.Datastore.GetRepository(repositoryId)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with id %s: %s", repositoryId, err.Error())})
+            return
+        }
+
+        repository.Tags = userRepository.Tags
+
+        utils.RespondWithJson(w, http.StatusOK, repository)
     })
 }

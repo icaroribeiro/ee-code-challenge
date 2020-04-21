@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS repositories (
 CREATE TABLE IF NOT EXISTS user_repositories (
     user_id VARCHAR(255) NOT NULL,
     repository_id VARCHAR(255) NOT NULL,
-    tags VARCHAR (255) ARRAY NOT NULL,
+    tags VARCHAR (255) ARRAY,
 	PRIMARY KEY (user_id, repository_id)
 );

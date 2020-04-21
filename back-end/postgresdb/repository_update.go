@@ -54,7 +54,7 @@ func (d *Datastore) UpdateUserRepository(userId string, repositoryId string, use
     return nRowsAffected, nil
 }
 
-func (d *Datastore) UpdateRepository(id int, repository models.Repository) (int64, error) {
+func (d *Datastore) UpdateRepository(id string, repository models.Repository) (int64, error) {
     var result sql.Result
     var err error
     var nRowsAffected int64

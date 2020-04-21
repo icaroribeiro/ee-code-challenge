@@ -3,6 +3,7 @@ module github.com/icaroribeiro/ee-code-challenge/back-end
 go 1.13
 
 require (
+	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/mux v1.7.4
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.3.0

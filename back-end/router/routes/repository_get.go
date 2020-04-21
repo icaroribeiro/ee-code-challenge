@@ -5,6 +5,17 @@ import (
     "github.com/icaroribeiro/ee-code-challenge/back-end/server"
 )
 
+func AddGetRepositoryRoute(s *server.Server) Route {
+    var route = Route {
+            Name: "GetRepository",
+            Method: "GET",
+            Pattern: "/repositories/{repositoryId}",
+            HandlerFunc: handlers.GetRepository(s),
+        }
+
+    return route
+}
+
 func AddGetAllUserGithubStarredRepositoriesRoute(s *server.Server) Route {
     var route = Route {
             Name: "GetAllUserGithubStarredRepositories",

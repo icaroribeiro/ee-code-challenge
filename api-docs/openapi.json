@@ -372,28 +372,9 @@
                             "schema": {
                                 "type": "object",
                                 "required": [
-                                    "id",
-                                    "name",
-                                    "description",
-                                    "url",
-                                    "language"
+                                    "tags"
                                 ],
                                 "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "type": "string"
-                                    },
-                                    "url": {
-                                        "type": "string"
-                                    },
-                                    "language": {
-                                        "type": "string"
-                                    },
                                     "tags": {
                                         "type":"array",
                                         "items":{
@@ -417,7 +398,8 @@
                                         "name",
                                         "description",
                                         "url",
-                                        "language"
+                                        "language",
+                                        "tags"
                                     ],
                                     "properties": {
                                         "id": {

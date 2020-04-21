@@ -10,7 +10,7 @@ func AddUpdateUserRepositoryRoute(s *server.Server) Route {
     var route = Route {
             Name: "UpdateUserRepository",
             Method: "PUT",
-            Pattern: "users/{userId}/repositories/{repositoryId}",
+            Pattern: "/users/{userId}/repositories/{repositoryId}",
             HandlerFunc: middlewares.AdaptFunc(handlers.UpdateUserRepository(s)).
                 With(middlewares.ValidateRequestHeaderFields(map[string]string{
                         "Content-Type": "application/json",

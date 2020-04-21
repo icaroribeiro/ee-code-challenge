@@ -59,7 +59,7 @@ func (d *Datastore) CreateRepository(repository models.Repository) (models.Repos
     var err error
     var nRowsAffected int64
 
-    result, err = d.Stmts[QueryCreateUserRepository].Exec(repository.ID, 
+    result, err = d.Stmts[QueryCreateRepository].Exec(repository.ID, 
                 repository.Name,
                 repository.Description,
                 repository.URL,

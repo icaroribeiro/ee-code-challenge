@@ -15,8 +15,10 @@ func DeleteUserRepository(s *server.Server) http.HandlerFunc {
         var userId string
         var repositoryId string
         var userRepository models.UserRepository
+        var repository models.Repository
         var err error
         var nDeletedDocs int64
+        var userRepositories []models.UserRepository
 
         params = mux.Vars(r)
 
@@ -45,6 +47,22 @@ func DeleteUserRepository(s *server.Server) http.HandlerFunc {
             return
         }
 
+        repository, err = s.Datastore.GetRepository(repositoryId)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with id %s: %s", repositoryId, err.Error())})
+            return
+        }
+
+        if repository.ID == "" {
+            utils.RespondWithJson(w, http.StatusNotFound, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the repository with the id %s: the repository wasn't found", repositoryId)})
+            return
+        }
+
+        repository.Tags = userRepository.Tags
+
         nDeletedDocs, err = s.Datastore.DeleteUserRepository(userId, repositoryId)
 
         if err != nil {
@@ -57,7 +75,7 @@ func DeleteUserRepository(s *server.Server) http.HandlerFunc {
         if nDeletedDocs == 0 {
             utils.RespondWithJson(w, http.StatusNotFound, 
                 map[string]string{"error": fmt.Sprintf("Failed to delete the user repository with the user id %s and " + 
-                    "repository id %s: the user repository wasn't found", userId, repositoryId, err.Error())})
+                    "repository id %s: the user repository wasn't found", userId, repositoryId)})
             return
         }
 
@@ -69,6 +87,43 @@ func DeleteUserRepository(s *server.Server) http.HandlerFunc {
             return
         }
 
-        utils.RespondWithJson(w, http.StatusOK, userRepository)
+        // Additional step:
+        // Check if there is any other user associated with the same repository.
+        // If not, we can delete the related repository from the repository table.        
+        userRepositories, err = s.Datastore.GetAllUserRepositoriesByRepositoryId(repositoryId)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to get the user repositories with the repository id %s: %s" + 
+                    repositoryId, err.Error())})
+            return
+        }
+
+        if len(userRepositories) == 0 {
+            nDeletedDocs, err = s.Datastore.DeleteRepository(repositoryId)
+
+            if err != nil {
+                utils.RespondWithJson(w, http.StatusInternalServerError, 
+                    map[string]string{"error": fmt.Sprintf("Failed to delete the repository with the id %s: %s", 
+                        repositoryId, err.Error())})
+                return
+            }
+    
+            if nDeletedDocs == 0 {
+                utils.RespondWithJson(w, http.StatusNotFound, 
+                    map[string]string{"error": fmt.Sprintf("Failed to delete the repository with the id %s: " +
+                        "the repository wasn't found", repositoryId)})
+                return
+            }
+    
+            if nDeletedDocs > 1 {
+                utils.RespondWithJson(w, http.StatusInternalServerError, 
+                    map[string]string{"error": fmt.Sprintf("Failed to delete the repository with the id %s: " + 
+                        "the expected number of repositories deleted: %d, got: %d", repositoryId, 1, nDeletedDocs)})
+                return
+            }
+        }
+
+        utils.RespondWithJson(w, http.StatusOK, repository)
     })
 }

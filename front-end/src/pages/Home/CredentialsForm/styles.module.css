@@ -1,0 +1,21 @@
+.Form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Label {
+  text-align: right;
+}
+
+.Input {
+  width: 135px;
+}
+
+.Button {
+  width: 135px;
+  height: 30px;
+  padding: 0;
+  margin: auto;
+  display: block;
+}
