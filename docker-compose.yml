@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./front-end/.env
+    environment:
+      - REACT_APP_API_HOST=192.168.99.100
     restart: on-failure
     ports:
       - "3000:3000"

@@ -7,8 +7,8 @@ import { Provider } from 'react-redux';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
-import Routes from './routes/index';
-import store from './store/index';
+import Routes from './routes/index.js';
+import store from './store/index.js';
 
 ReactDOM.render(
   <Provider store={ store }>

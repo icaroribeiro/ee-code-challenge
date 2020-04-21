@@ -16,10 +16,8 @@ import RepositoryTable from '../../pages/Repository';
 import { grantLogin } from '../../actions/login';
 import { retrieveRepositories } from '../../actions/repository';
 
-//
 // This function is intended for dealing with retrieveing all data from repositories
 // before implying the creation, editing or even removal of repositories from the database.
-//
 async function arrangeRepositories(username) {
   var response;
 
@@ -185,7 +183,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   return {
     onGrantLogin: () => {
-      dispatch(GrantLogin())
+      dispatch(grantLogin())
     },
     onRetrieveRepositories: async (username) => {
       try {

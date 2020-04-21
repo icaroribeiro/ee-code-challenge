@@ -1,7 +1,7 @@
 import { LOGIN_REQUESTED } from './types.js';
 import { LOGIN_SUCCEEDED } from './types.js';
 
-export const RequestLogin = () => {
+export const requestLogin = () => {
     return {
         type: LOGIN_REQUESTED,
         payload: {
@@ -9,7 +9,7 @@ export const RequestLogin = () => {
     };
 }
 
-export const GrantLogin = (username) => {
+export const grantLogin = (username) => {
     return {
         type: LOGIN_SUCCEEDED,
         payload: {
