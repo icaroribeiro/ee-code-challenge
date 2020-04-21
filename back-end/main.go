@@ -78,7 +78,7 @@ func main() {
     log.Printf("Starting the HTTP server connection on %s", httpAddress)
 
     go func() {
-        err = http.ListenAndServe(httpAddress, r)
+        err = http.ListenAndServe(httpAddress, router.LoadCORS(r))
 
         if err != nil {
             log.Fatalf("Failed to start the HTTP server connection to %s: %s", httpAddress, err.Error())
