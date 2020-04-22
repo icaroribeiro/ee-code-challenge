@@ -51,20 +51,13 @@ func UpdateUserRepository(s *server.Server) http.HandlerFunc {
             return
         }
 
-        if len(userRepository.Tags) == 0 {
-            utils.RespondWithJson(w, http.StatusBadRequest, 
-                map[string]string{"error": "The tags field is required and must be set to an array containing " +
-                    "at least one tag"})
-            return
-        }
-
-        body = fmt.Sprintf(`{`)
+        body = fmt.Sprintf(`{"tags":[`)
 
         // Verify if all the tags associated with the repository are valid.
         // Additionally, checks if there are no duplicate tags.
         tagMap = make(map[string]bool)
 
-        for _, tag = range userRepository.Tags {
+        for i, tag = range userRepository.Tags {
             if tag == "" {
                 utils.RespondWithJson(w, http.StatusNotFound, 
                     map[string]string{"error": fmt.Sprintf("Failed to add one of the tags: there is an empty value")})
@@ -80,7 +73,7 @@ func UpdateUserRepository(s *server.Server) http.HandlerFunc {
             }
 
             if i == 0 {
-                body += fmt.Sprintf(`"tags":["%s"`, tag)
+                body += fmt.Sprintf(`"%s"`, tag)
             } else {
                 body += fmt.Sprintf(`,"%s"`, tag)
             }

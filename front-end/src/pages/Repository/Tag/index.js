@@ -6,12 +6,11 @@ const Tags = (props) => {
     return (
         <div>
             {
-              tags &&
-                tags.map(tag => {
-                    return (
-                        ` #${tag.name}`
-                    );
-            })}
+                tags && 
+                    tags.map(tag => {
+                            return (` #${tag}`);
+                        })
+            }
         </div>
     );
 };

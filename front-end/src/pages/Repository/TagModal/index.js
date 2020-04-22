@@ -10,12 +10,12 @@ import { updateUserRepository } from '../../../service/api.js';
 
 import { renewRepository } from '../../../actions/repository.js';
 
-function createStringWithTagsNames(tags) {
+function createStringWithTags(tags) {
     var str = "";
 
     if (tags) {
         for (var i = 0; i < tags.length; i++) {
-            str = str + tags[i].name;
+            str = str + tags[i];
 
             if (i < tags.length - 1) {
                 str = str + ", ";
@@ -27,25 +27,25 @@ function createStringWithTagsNames(tags) {
 }
 
 function splitStringIntoArray(str) {
-    var arr = [];
+    var array = [];
 
     if (str === "") {
-        return arr;
+        return array;
     }
     
     var newStr = str.replace(/[\s,]+/g, ' ').trim();
-    arr = newStr.split(" ");
+    array = newStr.split(" ");
     let removeDups = (list) => list.filter((v, i) => list.indexOf(v) === i);  
 
-    return removeDups(arr);
+    return removeDups(array);
 }
 
-function createNewTags(names) {  
+function createNewTags(tags) {  
     var newTags = [];
     
-    if (names.length > 0) {
-        for (var i = 0; i < names.length; i++) {
-          newTags.push(names[i]);
+    if (tags.length > 0) {
+        for (var i = 0; i < tags.length; i++) {
+          newTags.push(tags[i]);
         }
     }
 
@@ -65,7 +65,7 @@ function createNewTags(names) {
           }
 
           for (let i = 0; i < newTags.length; i++) {
-              var pos = tags.findIndex(tag => tag.name === newTags[i].name);
+              var pos = tags.findIndex(tag => tag === newTags[i]);
             
               if (pos !== -1) {
                   newTags[i] = tags[pos];
@@ -74,6 +74,7 @@ function createNewTags(names) {
               }
           }
       }
+
     return hasToUpdate;
 }
 
@@ -84,7 +85,7 @@ class TagModal extends React.Component {
         this.state = {
             modal: false,
             tags: [],
-            namesStr: ""
+            tagsString: ""
         };
 
         this.toggle = this.toggle.bind(this);
@@ -99,16 +100,27 @@ class TagModal extends React.Component {
     }
 
     save() {
-        var names = splitStringIntoArray(this.state.namesStr);
-        var newTags = createNewTags(names);
+        var tags = splitStringIntoArray(this.state.tagsString);
+        var newTags = createNewTags(tags);
         var repository = this.props.repository;
         var username = this.props.username;
 
         if (hasToUpdateTags(newTags, repository.tags)) {
-                repository.tags = newTags;
-                this.props.onRenewRepository(username, repository.id, repository)
-            .then(() => {
-            })
+            repository.tags = newTags;
+            this.props.onRenewRepository(username, repository.id, repository)
+                .then(() => {
+                    if (newTags.length === 0) {  
+                        if ((typeof repository.tags === 'undefined') || 
+                            (repository.tags && repository.tags.length === 0)) {
+                                this.loadSuggestedTags(repository);
+                          }
+                    } else {
+                        this.setState({
+                            tags: newTags,
+                            tagsString: createStringWithTags(newTags)
+                        });
+                    }
+                })
             .catch((err) => {
                 console.log('Caught error: ', err);
             })
@@ -117,18 +129,6 @@ class TagModal extends React.Component {
         this.setState(prevState => ({
             modal: !prevState.modal
         }));
-
-      if (newTags.length === 0) {  
-          if ((typeof repository.tags === 'undefined') || 
-              (repository.tags && repository.tags.length === 0)) {
-                  this.loadSuggestedTags(repository);
-            }
-        } else {
-            this.setState({
-                tags: newTags,
-                namesStr: createStringWithTagsNames(newTags)
-            });
-        }
     };
 
     cancel() {
@@ -136,26 +136,28 @@ class TagModal extends React.Component {
 
         this.setState(prevState => ({
             modal: !prevState.modal,
-            namesStr: createStringWithTagsNames(tags)
+            tagsString: createStringWithTags(tags)
         }));
     };
 
     async loadSuggestedTags (repository) {
         try {
-            const response = await getRepository(repository.id)
+            var suggestedTags = [];
+            const response = await getRepository(repository.id);
             
             if (response.data.tags && response.data.tags.length > 0) {
                 var maxTagsNbr = process.env.REACT_APP_MAX_TAGS_NBR;
 
                 if ((typeof maxTagsNbr !== 'undefined') &&
                     (maxTagsNbr && maxTagsNbr > 0)) {
-                        var suggestedTags = response.data.tags.slice(0, maxTagsNbr);
-                        this.setState({
-                            tags: suggestedTags,
-                            namesStr: createStringWithTagsNames(suggestedTags)
-                        });
+                        suggestedTags = response.data.tags.slice(0, maxTagsNbr);
                 }
             }
+
+            this.setState({
+                tags: suggestedTags,
+                tagsString: createStringWithTags(suggestedTags)
+            });
         }
         catch (error) {
             console.log(error);
@@ -171,14 +173,14 @@ class TagModal extends React.Component {
         } else {
             this.setState({
                 tags: repository.tags,
-                namesStr: createStringWithTagsNames(repository.tags)
+                tagsString: createStringWithTags(repository.tags)
             });
         }
     }
 
     handleChange = event => {
         this.setState({
-            namesStr: event.target.value
+            tagsString: event.target.value
         });
     }
 
@@ -192,7 +194,7 @@ class TagModal extends React.Component {
                         <ModalBody>
                             <Form>
                                 <FormGroup>
-                                    <Input name="namesStr" value={this.state.namesStr} onChange={this.handleChange}/>
+                                    <Input name="tagsString" value={this.state.tagsString} onChange={this.handleChange}/>
                                 </FormGroup>
                             </Form>
                         </ModalBody>

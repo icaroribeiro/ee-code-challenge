@@ -80,7 +80,7 @@ class Repository extends Component {
 
         if (tags) {
           for (var i = 0; i < tags.length; i++) {
-            if ((tags[i].name).startsWith(searchText)) {
+            if ((tags[i]).startsWith(searchText)) {
               return true;
             }
           }
