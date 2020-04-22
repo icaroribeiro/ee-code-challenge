@@ -5,32 +5,32 @@ import NavBar from "../NavBar";
 import Footer from "../Footer";
 
 class LayoutNav extends Component{
-    render(){
-        let renderData;
-        
-        renderData = (
-            this.props.children
-        );
+  render(){
+    let renderData;
+    
+    renderData = (
+      this.props.children
+    );
 
-        const isLogged = this.props.isLogged;
-  
-        return(
-              <div>
-                <div>
-                  <NavBar
-                  isLogged={ isLogged }
-                  />
-                </div>
-                <div>
-                  {renderData}
-                </div>
-                <div>
-                  <Footer
-                  />
-                </div>
-            </div>
-        );
-    }
+    const isLogged = this.props.isLogged;
+
+    return(
+      <div>
+        <div>
+          <NavBar
+            isLogged={ isLogged }
+          />
+        </div>
+        <div>
+          {renderData}
+        </div>
+        <div>
+          <Footer
+          />
+        </div>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = (state) => {
