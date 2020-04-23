@@ -6,13 +6,13 @@ import history from '../routes/history.js';
 import rootReducer from '../reducers/index.js';
 
 const middlewares = [
-    thunk,
-    routerMiddleware(history),
+  thunk,
+  routerMiddleware(history),
 ];
 
 const store = createStore(
-    rootReducer(history),
-    applyMiddleware(...middlewares)
+  rootReducer(history),
+  applyMiddleware(...middlewares)
 );
 
 export default store;

@@ -77,84 +77,84 @@ async function arrangeRepositories(username) {
 }
 
 class SubmitContainer extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            loading: true,
-            progress: 100
-        }
-    }  
+    this.state = {
+      loading: true,
+      progress: 100
+    }
+  }  
 
-    componentDidMount() {
-        var username = this.props.location.state.username;
+  componentDidMount() {
+    var username = this.props.location.state.username;
 
-        if (typeof(this.props.location.state) !== 'undefined') {
-            arrangeRepositories(username);      
+    if (typeof(this.props.location.state) !== 'undefined') {
+      arrangeRepositories(username);      
 
-            setTimeout(function() {
-                this.props.onGrantLogin();
-                this.props.onRetrieveRepositories(username)
-                .then(() => {
-                    this.setState({ loading: false })
-                })
-                .catch((err) => {
-                    console.log('Caught error: ', err);
-                })
-            }.bind(this), 3000);
-        }
+      setTimeout(function() {
+        this.props.onGrantLogin();
+        this.props.onRetrieveRepositories(username)
+        .then(() => {
+          this.setState({ loading: false })
+        })
+        .catch((err) => {
+          console.log('Caught error: ', err);
+        })
+      }.bind(this), 3000);
+    }
+  }
+
+  render() {
+    if (typeof(this.props.location.state) === 'undefined') {
+      return <Redirect to='/' />
     }
 
-    render() {
-        if (typeof(this.props.location.state) === 'undefined') {
-            return <Redirect to='/' />
-        }
+    const Loading = this.props.placeholder
 
-        const Loading = this.props.placeholder
-
-        if (this.state.loading) {
-            return (
-                <Container className={styles.Container}>
-                    <Loading 
-                        progress={ this.state.progress }
-                    />
-                </Container>
-            );
-        }
-
-        var repositories = this.props.repositories;
-        var username = this.props.location.state.username;
-
-        if (repositories === "") {
-            return <RepositoryTable data={ [] } />
-        } else {
-            return <RepositoryTable username = { username }
-                data={ repositories } />
-        }
+    if (this.state.loading) {
+      return (
+        <Container className={styles.Container}>
+          <Loading 
+            progress={ this.state.progress }
+          />
+        </Container>
+      );
     }
+
+    var repositories = this.props.repositories;
+    var username = this.props.location.state.username;
+
+    if (repositories === "") {
+      return <RepositoryTable data={ [] } />
+    } else {
+      return <RepositoryTable username = { username }
+        data={ repositories } />
+    }
+  }
 }
 
 const mapStateToProps = (state) => {
-    return {
-        repositories: state.repositoryReducer.repositories
-    };
+  return {
+    repositories: state.repositoryReducer.repositories
+  };
 }
 
 const mapDispatchToProps = dispatch => {
-    return {
-        onGrantLogin: () => {
-            dispatch(grantLogin())
-        },
-        onRetrieveRepositories: async (username) => {
-            try {
-                const response = await getAllUserRepositories(username);
-                dispatch(retrieveRepositories(response.data));
-            }
-            catch (err) {
-                console.log('Caught error: ', err);
-            }
-        }
-    };
+  return {
+    onGrantLogin: () => {
+      dispatch(grantLogin())
+    },
+    onRetrieveRepositories: async (username) => {
+      try {
+        const response = await getAllUserRepositories(username);
+        dispatch(retrieveRepositories(response.data));
+      }
+      catch (err) {
+        console.log('Caught error: ', err);
+      }
+    }
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SubmitContainer);

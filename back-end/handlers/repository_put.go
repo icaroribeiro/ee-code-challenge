@@ -8,7 +8,6 @@ import (
     "github.com/icaroribeiro/ee-code-challenge/back-end/server"
     "github.com/icaroribeiro/ee-code-challenge/back-end/utils"
     "net/http"
-    //"strconv"
 )
 
 func UpdateUserRepository(s *server.Server) http.HandlerFunc {
