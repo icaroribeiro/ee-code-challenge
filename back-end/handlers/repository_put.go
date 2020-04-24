@@ -74,7 +74,7 @@ func UpdateRepository(s *server.Server) http.HandlerFunc {
         }
 
         if nRowsAffected == 0 {
-            utils.RespondWithJson(w, http.StatusConflict, 
+            utils.RespondWithJson(w, http.StatusNotFound, 
                 map[string]string{"error": fmt.Sprintf("Failed to update the repository with the id %s with %s: " +
                     "the repository wasn't found", repositoryId, body)})
             return
@@ -171,7 +171,7 @@ func UpdateUserRepository(s *server.Server) http.HandlerFunc {
         }
 
         if nRowsAffected == 0 {
-            utils.RespondWithJson(w, http.StatusConflict, 
+            utils.RespondWithJson(w, http.StatusNotFound, 
                 map[string]string{"error": fmt.Sprintf("Failed to update the user repository with the user id %s and repository id %s with %s: " + 
                     "the user repository wasn't found", userId, repositoryId, body)})
             return

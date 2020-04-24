@@ -119,7 +119,7 @@ func CreateUserRepository(s *server.Server) http.HandlerFunc {
                 }
 
                 if nRowsAffected == 0 {
-                    utils.RespondWithJson(w, http.StatusConflict, 
+                    utils.RespondWithJson(w, http.StatusNotFound, 
                         map[string]string{"error": fmt.Sprintf("Failed to update the repository with the id %s with %s: " +
                             "the repository wasn't found", repository.ID, body)})
                     return
