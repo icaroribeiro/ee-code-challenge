@@ -25,6 +25,16 @@ export const getRepository = (id) => {
   }
 }
 
+export const updateRepository = (id, repository) => { 
+  try {
+    return api.get(`/repositories/${id}`,
+        JSON.stringify(repository)
+      )
+  } catch (err) {
+    console.log('Caught error: ', err);
+  }
+}
+
 export const getAllUserGithubStarredRepositories = (username) => { 
   try {
     return api.get(`/users/${username}/githubStarredRepositories`)

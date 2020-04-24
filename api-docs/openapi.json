@@ -105,6 +105,105 @@
                         }
                     }
                 }
+            },
+            "put": {
+                "tags": [
+                    "repository"
+                ],
+                "summary": "API endpoint designed to update a specific repository by its id.",
+                "operationId": "UpdateRepository",
+                "parameters": [{
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "url",
+                                    "language"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "language": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },            
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "url",
+                                        "language"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "type":"array",
+                                            "items":{
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Got an internal application error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users/{userId}/githubStarredRepositories": {
@@ -112,7 +211,7 @@
                 "tags": [
                     "repository"
                 ],
-                "summary": "API endpoint designed to get the list of all user Github starred repositories.",
+                "summary": "API endpoint designed to get the list of all user starred repositories from Github.",
                 "operationId": "GetAllUserGithubStarredRepositories",
                 "parameters": [{
                         "name": "userId",
@@ -180,7 +279,7 @@
                 "tags": [
                     "repository"
                 ],
-                "summary": "API endpoint designed to register a new repository.",
+                "summary": "API endpoint designed to register a new user repository.",
                 "operationId": "CreateUserRepository",
                 "parameters": [{
                         "name": "userId",
@@ -353,12 +452,21 @@
                 "tags": [
                     "repository"
                 ],
-                "summary": "API endpoint designed to update a specific repository by its id.",
+                "summary": "API endpoint designed to update a specific user repository by its id.",
                 "operationId": "UpdateUserRepository",
                 "parameters": [{
                         "name": "userId",
                         "in": "path",
                         "description": "The id of the user.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "repositoryId",
+                        "in": "path",
+                        "description": "The id of the repository.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -444,7 +552,7 @@
                 "tags": [
                 "repository"
                 ],
-                "summary": "API endpoint designed to delete a specific repository by its id.",
+                "summary": "API endpoint designed to delete a specific user repository by its id.",
                 "operationId": "DeleteUserRepository",
                 "parameters": [{
                         "name": "userId",
@@ -467,7 +575,44 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation."
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "url",
+                                        "language"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "type":"array",
+                                            "items":{
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     },
                     "500": {
                         "description": "Got an internal application error.",

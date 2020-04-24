@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 
 import { getStatus } from '../../service/api';
+import { updateRepository } from '../../service/api';
 import { getAllUserGithubStarredRepositories } from '../../service/api.js';
 import { createUserRepository } from '../../service/api.js';
 import { getAllUserRepositories } from '../../service/api.js';
@@ -15,65 +16,66 @@ import RepositoryTable from '../../pages/Repository';
 import { grantLogin } from '../../actions/login';
 import { retrieveRepositories } from '../../actions/repository';
 
-// This function is intended for dealing with retrieveing all data from repositories
-// before implying the creation, editing or even removal of repositories from the database.
+// This function is to arrange all user repositories when comparing those currently starred on Github website
+// with those that have already been registered in the database. The result of this evaluation will imply 
+// the creation, editing and even removing of repositories from the database.
 async function arrangeRepositories(username) {
-    var response;
+  var response;
 
-    var i, j;
-    var isRegistered;
-    
-    var githubStarredRepositories = []
-    var userRepositories = [];
+  var i;
 
-    try {
-        response = await getStatus();
-    } catch (err) {
-        console.log('Caught error: ', err);
-        return;
+  var githubStarredRepositories = [];
+  var repositoryMap1 = new Map();
+  
+  var userRepositories = [];
+  var repositoryMap2 = new Map();
+  
+
+  try {
+    response = await getStatus();
+  } catch (err) {
+    console.log('Caught error: ', err);
+    return;
+  }
+
+  response = await getAllUserGithubStarredRepositories(username);
+  
+  if (typeof response.data !== 'undefined' && response.data !== null) {
+    githubStarredRepositories = response.data;
+  }
+
+  for (i = 0; i < githubStarredRepositories.length; i++) {
+    repositoryMap1.set(githubStarredRepositories[i].id, githubStarredRepositories[i]);
+  }
+
+  response = await getAllUserRepositories(username);
+
+  if (typeof response.data !== 'undefined' && response.data !== null) {
+    userRepositories = response.data;
+  }
+
+  for (i = 0; i < userRepositories.length; i++) {
+    repositoryMap2.set(userRepositories[i].id, userRepositories[i]);
+
+    if (!repositoryMap1.has(userRepositories[i].id)) {
+      response = await deleteUserRepository(username, userRepositories[i].id);
     }
+  }
 
-    response = await getAllUserGithubStarredRepositories(username);
-    
-    if (typeof response.data !== 'undefined' && response.data !== null) {
-        githubStarredRepositories = response.data;
-    }
+  for (var [key, value] of repositoryMap1) {
+    if (repositoryMap2.has(key)) {
+      var repository = repositoryMap2.get(key);
 
-    response = await getAllUserRepositories(username);
-
-    if (typeof response.data !== 'undefined' && response.data !== null) {
-        userRepositories = response.data;
-    }
-
-    for (i = 0; i < githubStarredRepositories.length; i++) {
-        isRegistered = false;
-
-        for (j = 0; j < userRepositories.length; j++) {
-            if (githubStarredRepositories[i].id === userRepositories[j].id) {
-                isRegistered = true;
-                break;
+      if (value.name !== repository.name ||
+        value.description !== repository.description ||
+          value.url !== repository.url ||
+            value.language !== repository.language) {
+              response = await updateRepository(key, value);
             }
-        }
-
-        if (!isRegistered) {
-            response = await createUserRepository(username, githubStarredRepositories[i]);
-        }
+    } else {
+      response = await createUserRepository(username, value);
     }
-
-    for (i = 0; i < userRepositories.length; i++) {
-        isRegistered = false;
-
-        for (j = 0; j < githubStarredRepositories.length; j++) {
-            if (userRepositories[i].id === githubStarredRepositories[j].id) {
-                isRegistered = true;
-                break;
-            }
-        }
-
-        if (!isRegistered) {
-            response = await deleteUserRepository(username, userRepositories[i].id);
-        }
-    }
+  }
 }
 
 class SubmitContainer extends Component {

@@ -10,6 +10,87 @@ import (
     "net/http"
 )
 
+func UpdateRepository(s *server.Server) http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        var params map[string]string
+        var repositoryId string
+        var err error
+        var repository models.Repository
+        var body string
+        var nRowsAffected int64
+
+        params = mux.Vars(r)
+
+        repositoryId = params["repositoryId"]
+
+        if repositoryId == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The repository id is required and must be set to a non-empty value in the request URL"})
+            return
+        }
+
+        err = json.NewDecoder(r.Body).Decode(&repository)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to decode the request body: %s", err.Error())})
+            return
+        }
+
+        if repository.Name == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The name field is required and must be set to a non-empty value"})
+            return
+        }
+
+        if repository.Description == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The description field is required and must be set to a non-empty value"})
+            return
+        }
+        
+        if repository.URL == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The url field is required and must be set to a non-empty value"})
+            return
+        }
+
+        if repository.Language == "" {
+            utils.RespondWithJson(w, http.StatusBadRequest, 
+                map[string]string{"error": "The language field is required and must be set to a non-empty value"})
+            return
+        }
+
+        body = fmt.Sprintf(`{"name":"%s","description":"%s","url":"%s","language":"%s"}`, 
+            repository.Name, repository.Description, repository.URL, repository.Language)
+
+        nRowsAffected, err = s.Datastore.UpdateRepository(repositoryId, repository)
+
+        if err != nil {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to update the repository with the id %s with %s: %s", 
+                    repositoryId, body, err.Error())})
+            return
+        }
+
+        if nRowsAffected == 0 {
+            utils.RespondWithJson(w, http.StatusConflict, 
+                map[string]string{"error": fmt.Sprintf("Failed to update the repository with the id %s with %s: " +
+                    "the repository wasn't found", repositoryId, body)})
+            return
+        }
+
+        if nRowsAffected != 1 {
+            utils.RespondWithJson(w, http.StatusInternalServerError, 
+                map[string]string{"error": fmt.Sprintf("Failed to update the repository with the id %s with %s: " + 
+                    "the expected number of repositories updated: %d, got: %d", repositoryId, body, 1, nRowsAffected)})
+            return
+        }
+
+        utils.RespondWithJson(w, http.StatusOK, repository)
+    })
+}
+
 func UpdateUserRepository(s *server.Server) http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         var params map[string]string

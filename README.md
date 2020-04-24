@@ -22,7 +22,94 @@ The developed solution is organized according to the structure of directories an
 
 ### 3.1 - Back-end
 
+The following directories contain the **REST** API implementation using **Go** programming language.
+
+**back-end/graphql**: it contains the schema for querying starred repositories related to Github users implemented based on the Github v4 API with **GraphQL**.
+
+**back-end/handlers**: it contains the handling of API requests, as well as the elaboration of API responses.
+
+**back-end/handlers_test**: it contains the tests for handling requests to the API *endpoint* using the **Go** language test package.
+
+**back-end/middlewares**: it contains intermediate validations of parameters transmitted through API requests.
+
+**back-end/models**: it contains the definition of the data entities used by both the API and the database.
+
+**back-end/postgresdb**: it contains the implementation directed to the database configuration along with **CRUD** operations (*create*, *read*, *update* and *delete*).
+
+**back-end/postgresdb_test**: it contains the tests of the implementation of **CRUD** operations using the **Go** language test package.
+
+**back-end/router**: it contains a router that exposes the routes associated with the API *endpoints*.
+
+**back-end/router/routes**: it contains the routes associated with the API *endpoints*.
+
+**back-end/server**: it contain an abstraction of the server that allows to "attach" some resources in order to make them available during the API requests. Here, it's used to store the Github personal access token as well as other structure that holds attributes to manage the data.
+
+**back-end/utils**: it contains supporting functions, such as, to elaborate the API responses in JSON-like format and to generate random data used during the tests.
+
+**back-end/.env**: it contains the environment variables for the configuration of the **development** environment.
+
+**back-end/.test.env**: it contains the environment variables for the configuration of the **test** environment.
+
+The **back-end/.env** file contains the environment variables referring to the personal access token required to authenticate to Github and the connection to **Postgres** database, as well as the exposure of the access address for HTTP communication, as indicated below:
+
+```
+GITHUB_PERSONAL_ACCESS_TOKEN=<Token>
+```
+
+```
+DB_USERNAME=user
+DB_PASSWORD=password
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=db
+```
+
+```
+HTTP_SERVER_HOST=0.0.0.0
+HTTP_SERVER_PORT=8080
+```
+
+In order to not compromise the integrity of the database used by the project in terms of data generated from the execution of the test cases, two Postgres databases will be used.
+
+In this sense, to facilitate future explanations regarding the details of the databases, consider that the database used for the storage of data in a "normal" actions is the **development** database and the one used for the storage of data resulting from the test cases is the **test** database.
+
+These databases are named **db** and **test-db** by the environment variables **DB_NAME** of the **back-end/.env** file and **TEST_DB_NAME** of the **back-end/.test.env** file, respectively.
+
+(P.S. It is necessary to pay special attention to the database environment variables defined in these two previous files in case they are changed.)
+
 ### 3.2 - Front-end
+
+The following directories contain the **graphical interfaces** implementation using **React** programming language and **Redux**.
+
+**front-end/src/actions**: it contains the **React** constants and action creators.
+
+**front-end/src/components**: it contains components and their shared styles that are used to determine the layout of the application.
+
+**front-end/src/containers**: it contains a "submission" container to connect the navigation logic to the application state using **Redux**. This container is also used to manage the repositories that will be presented in the repository table.
+
+**front-end/src/pages**: it contains the application pages.
+
+**front-end/src/reducers**: it contains the mechanisms to manage the update of the application state based on actions triggered using **Redux**, enabling the asynchronous dispatching of actions.
+
+**front-end/src/routes**: it contains the routes associated with the API *endpoints* of the **back-end** application.
+
+**front-end/src/service**: it contains functions to manage external communication with the API developed in the **back-end** application using the HTTP client based on *promise* named **axios**.
+
+**front-end/src/store**: it contains the implementation of the creation of the **store** of the **Redux**.
+
+**front-end/.env**: it contains the environment variables for the configuration of the **development** environment.
+
+The **front-end/.env** file contains the environment variables referring to the *host* that composes each *URL* to access the API *endpoints* and the maximum number of suggested tags for each repository while editing its related tags.
+
+```
+REACT_APP_API_HOST=<Host>
+```
+
+In continuity, the maximum number of suggested tags for each repository is configured by the **REACT_APP_MAX_TAGS_NBR** environment variable:
+
+```
+REACT_APP_MAX_TAGS_NBR=<Maximum number of suggested tags>
+```
 
 ### 3.3 - Postgres
 
@@ -161,7 +248,21 @@ $ psql -U user test-db
 
 **In the case of the environment variables of all the .env and .test.env files from all directories are kept as they were delivered I strongly believe that it will not be necessary any change before executing the project.**.
 
-**Prior** to run the project, it is first necessary to configure the IP address (*host*) configured by Docker so that the **front-end** application can communicate with the **back-end** application using HTTP.
+**Prior** to run the project, it is first necessary to configure two settings:
+
+1. The personal access token required to authenticate to Github in order to get the Github starred repositories of a specific user by its username.
+
+```
+  ...
+  back-end:
+    container_name: back-end
+    ...
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=<Github personal access token>
+    ...
+```
+
+2. The IP address (*host*) configured by Docker so that the **front-end** application can communicate with the **back-end** application using HTTP.
 
 The *host* corresponds to the value informed when executing a command at a command prompt with access to instructions directed to Docker:
 
@@ -204,6 +305,10 @@ http://192.168.99.100:8080
 In addition, it is also worth emphasizing that the entire configuration related to **Docker** was evaluated in this documentation based on the **DockerToolbox** tool for Windows.
 
 ## 5 - How to use the API *endpoints*?
+
+**Important note**
+
+In what follows, the **userId** informed in the request URL of all API requests must be replaced by the **username** of a Github user whereas the **repositoryId** is just the **id** of the related Github repository.
 
 ## 6 - Tests
 
@@ -317,251 +422,360 @@ $ go test -v -run=TestDeleteUserRepository
 $ go test -v -run=TestGetRepository
 ```
 
-
-
-
-
-
-
-
-
-
-
-
+```
+$ go test -v -run=TestUpdateRepository
+```
 
 ## 7 - Project Dynamics
 
-Traduzir:
+In what follows, there is a brief account of how the solution works in practice meeting the requirements specified in the comments of the code challenge.
 
-Logo abaixo é evidenciado um breve relato de como a solução funciona na prática.
+### 7.1 - Home Page
 
-### 7.1 - Página Inicial
+The project's home page is presented by the **front-end** application when accessing the address in the following format where the *host* corresponds to the IP address configured by Docker:
 
-A página inicial do projeto é apresentada pela aplicação **front-end** ao acessar o endereço no seguinte formato em que o *host* corresponde ao endereço do servidor de acesso:
-
-```
+``
 http://{host}:3000
-```
+``
 
-Para acessar a página com a tabela de repositórios estrelados, primeiramente, é necessário inserir um *username* de usuário válido do Github na caixa de texto demonstrada e, em seguida, clicar no botão **get repositories**.
+To access the page with the table of the starred repositories, first, it is necessary to enter a **username** of a valid Github user in the text box shown and then click on the **get repositories** button.
 
-Ao clicar no botão **get repositories** é desenvolvida uma **série de avaliações** envolvendo repositórios que resultam na criação, edição ou até mesmo a deleção de repositórios (como também suas tags relacionadas, caso existam) do banco de dados.
+By clicking on the **get repositories** button, a **set of evaluations** is developed involving repositories (as well as their related tags, if any) that can result in the creation, editing or even deletion of records from the database performed by API requests directed to the **back-end** application.
 
-### 7.1.1 - Avaliação dos repositórios associados a um usuário do Github
+### 7.1.1 - Evaluation of the repositories associated with a Github user
 
-Inicialmente, **duas** listas de repositórios são formuladas e, posteriormente, seus repositórios são comparados entre si considerando **somente** o valor do identificador único de cada repositório, o campo **id**.
+Initially, **two** lists of repositories are formulated and, later, their repositories are compared with each other considering **only** the value of the unique identifier of each repository, that is, the **id** field.
 
-Uma lista de repositórios é composta **apenas** pelos repositórios atualmente estrelados pelo usuário do Github, obtidos por meio da seguinte requisição da API:
+A list of repositories is composed **only** by the current starred repositories of the Github user and they are obtained through the API request:
 
-Requisição:
-
-```
-Método: HTTP GET
-```
+Request:
 
 ```
-URL: http://{host}:8080/users/{userId}/githubStarredRepositories
+Method: HTTP GET
 ```
 
-A outra lista de repositórios é composta **apenas** dos repositórios anteriormente criados na tabela **user_repository_tag** que estão associados ao mesmo usuário, obtidos por meio da seguinte requisição da API:
-
-Requisição:
+Response:
 
 ```
-Método: HTTP GET
+Code: 200 OK - In the case of the Github starred repositories are successfully obtained.
 ```
 
 ```
-URL: http://{host}:8080/users/{userId}/repositories
+*application/json*
+
+Body: [
+    {
+        "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+        "name": "go",
+        "description": "The Go programming language",
+        "url": "https://github.com/golang/go",
+        "language": "Go"
+    },
+    {
+        "id": "MDEwOlJlcG9zaXRvcnkxNTA0NTc1MQ==",
+        "name": "compose",
+        "description": "Define and run multi-container applications with Docker",
+        "url": "https://github.com/docker/compose",
+        "language": "Python"
+    }
+]
 ```
 
-A lista de repositórios acima é composta por registros do banco de dados que podem ter sido inseridos em um momento passado ao acessar o projeto usando o mesmo nome do usuário do Github.
+The other list of repositories is composed **only** by the repositories previously created in the **user_repositories** table that are associated with the same user and they are obtained through the API request:
 
-Conforme indicado, após a obtenção destas **duas** listas iniciais de repositórios, seus repositórios são comparados entre si considerando **somente** o campo **id**.
-
-#### Criação de repositórios
-
-Primeiramente, é analisado **somente** os repositórios estrelados pelo usuário do Github que não estão registrados na tabela **user_repository_tag**. (Isto é, os repositórios que estão na lista primeira lista, mas não estão na segudna lista).
-
-Cada um destes repositórios vai ser associados ao usuário na tabela **user_repository_tag** por meio da seguinte requisição da API:
-
-Requisição:
+Request:
 
 ```
-Método: HTTP POST
+Method: HTTP GET
 ```
 
 ```
-URL: http://{host}:8080/users/{userId}/repository
+URL: http://{host}:8080/users/icaroribeiro/repositories
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the user repositories are successfully obtained.
+```
+
+```
+*application/json*
+
+Body: [
+    {
+        "id": "MDEwOlJlcG9zaXRvcnkxNTA0NTc1MQ==",
+        "name": "compose",
+        "description": "Define and run multi-container applications with Docker",
+        "url": "https://github.com/docker/compose",
+        "language": "Python"
+    },
+    {
+        "id": "MDEwOlJlcG9zaXRvcnkxMjM0NzE0",
+        "name": "elixir",
+        "description": "Elixir is a dynamic, functional language designed for building scalable and maintainable applications",
+        "url": "https://github.com/elixir-lang/elixir",
+        "language": "Elixir"
+    }
+]
+```
+
+In other words, the list of repositories above consists of database records that may have been inserted at any time when accessing the project using the same **username** as the Github user.
+
+(P.S. As already indicated, after obtaining these **two** lists of repositories, their repositories will be compared with each other considering **only** their **id** fields.)
+
+#### Creation of Repositories
+
+Firstly, in the **front-end** application, it is analyzed **only** the current starred repositories of the Github user that are not registered in the **user_repositories** table. In short, it is "filtered" the repositories that are on the first list, but are not on the second list.
+
+Each of these repositories will be associated with the related user in the **user_repositories** table through the API request:
+
+Request:
+
+```
+Method: HTTP POST
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/repository
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go"
+}
+```
+
+Response:
+
+```
+Code: 201 OK - In the case of the user repository is successfully created.
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go"
+}
+```
+
+**Additional step**
+
+Still on this scenario, the creation of a record in the **user_repositories** table can imply in one of the two additional steps to be executed:
+
+1. If the repository that is associated with the Github user in the **user_repositories** table has not yet been created in the **repository** table, that is, the repository was never related to any user already recorded, then it will be created in the **repository** table. 
+
+2. Otherwise, if the repository is already associated with any user already recorded, it means that the repository was previously created in the **repository** table. In this case, the data of the repository is updated **only** in the **repository** table. It is considered appropriate since its data may have changed over time, for example its **description**.
+
+#### Deletion of Repositories
+
+Subsequently, in the **front-end** application, it is analyzed **only** the repositories associated with the user in the **user_repositories** table but are no longer starred by him/her in Github. In short, it is "filtered" the repositories that are on the second list, but are not on the first list.
+
+Each of records related to these repositories (along with its tags, if any) will be deleted from the **user_repositories** table through the API request:
+
+Request:
+
+```
+Method: HTTP DELETE
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/repositories/MDEwOlJlcG9zaXRvcnkxMjM0NzE0
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the repository is successfully deleted.
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkxMjM0NzE0",
+    "name": "elixir",
+    "description": "Elixir is a dynamic, functional language designed for building scalable and maintainable applications",
+    "url": "https://github.com/elixir-lang/elixir",
+    "language": "Elixir"
+}
+```
+
+**Additional step**
+
+Still on this scenario, the deletion of a record in the **user_repositories** table can imply in one of the two additional steps to be executed:
+
+1. If the repository that was associated with the Github user has not been related to any user already recorded in the **user_repositories** table, then it will be deleted in the **repository** table. 
+
+2. Otherwise, if the repository is associated with any user already recorded, it means that the data of the repository is necessary and it can't be deleted from the **repository** table. In this case, nothing happens.
+
+#### Update of Repositories
+
+Finally, in the **front-end** application, it is analyzed **only** the repositories associated with the user in the **user_repositories** table that **also** are starred in Github. In short, the repositories that are in both lists.
+
+These repositories will be updated in the **repository** table through the API request:
+
+Request:
+
+```
+Method: HTTP PUT
+```
+
+```
+URL: http://{host}:8080/repositories/MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==
 ```
 
 ```
 Body: {
-    "id": <ID do repositório>,
-    "name": <Nome do repositório>,
-    "description": <Descrição do repositório>,
-    "url": <URL do repositório>,
-    "language": <Linguagem do repositório>
+    "name": "golang",
+    "description": "The Go programming language from Google",
+    "url": "https://github.com/golang/go",
+    "language": "Golang"
 }
 ```
 
-Ainda sobre este cenário, caso um determinado repositório recentemente associado ao usuário do Github na tabela **user_repository_tags** ainda não tenha sido criado na tabela **repository**, então ele será registrado na tabela **repository**. Do contrário, isto significa que o repositório foi anteriormente criado na tabela **repository** por também estar associado a algum outro usuário já registrado na tabela **user_repository_tag** no passado.
+As already commented, it is considered suitable since its data may have changed over time. Above it is just a sample of the data of repository related to **name**, **description** and so forth that could have been modified.
 
-#### Remoção de repositório
+### 7.2 Page with the Repository table
 
-Posteriormente, é avaliado **somente** os repositórios associados ao usuário na tabela **user_repository_tag** que não estão mais estrelados pelo usuário no Github. (Isto é, os repositórios que estão na segunda lista, mas não estão na primeira lista).
+After accessing the project's home page, inserting a **username** of a valid Github user in the text box and clicking the **get repositories** button, the page with the starred repositories associated with the Github user is demonstrated with the components below:
 
-Estes repositórios vão ser deletados da tabela **user_repository_tag** por meio da seguinte requisição da API:
+In the upper left corner there is a text box with the message *search by tag* that is used to filter repositories by the name of one of their related tags and the search of a tag works with incomplete words.
 
-Requisição:
+Thus, if a repository has a tag named **go** and another repository has a tag called **golang**, when performing a search for repositories using the word **go**, or even just the letter **g**, both repositories will be maintained in the table as a result of the search process.
 
-```
-Método: HTTP DELETE
-```
+In the upper right corner there is a *link* called **Home** used to return to the project's home page.
 
-```
-URL: http://{host}:8080/users/{userId}/repositories/{repositoryId}
-```
+Below these components there is a table of repositories filled out with the following data of the starred repositories: name, description and language.
 
-Durante a remoção de repositórios associados ao usuário na tabela **user_repository_tag** que não estão mais estrelados no Github é desenvolvida uma análise para cada um deles que pode resultar na deleção de outros registros do banco de dados.
+(P.S. If the **username** entered on the project's home page does not belong to a valid Github user, or even **username** belongs to a valid Github user, but he/she does not have any associated starred repositories, the table of repositories is illustrated without any record.)
 
-**Remoção de tags**
+In continuity, if the table is filled out with repositories, the tags related to a given repository registered at a previous moment (if any) will be shown below the **Tags** column, in the line corresponding to the related repository.
 
-Inicialmente, é identificado se o repositório a ser deletado possui tags relacionadas com base no campo **tag_id** dos registros correspondentes da tabela **user_repository_tag**, isto é, aqueles registros que possuem o campo **user_id** igual o nome do usuário do Github e o campo **repository_id** igual o identificador único do repositório avaliado.
+To the right of the table there is a last column without title and each of its lines has a *link* called **edit** used to edit tags related to the corresponding repositories according to the selected line.
 
-Caso o repositório tenha tags relacionadas, é preciso verificar se cada uma delas também está relacionada a alguma outra associação entre um usuário do Github e um repositório na tabela **user_repository_tag**.
+When clicking the **edit** component, a window for editing tags is shown. It contains a text box for editing tags that is **automatically** filled out with words according to two situations:
 
-Se uma determinada tag não está relacionada a outra associação, além da remoção do registro correspondente da tabela **user_repository_tag**, a tag em questão também é removida da tabela **tag**.
+1. If the related record from the **user_repositories** table already has one or more related words from the **tags** column, these words are illustrated inside the text box.
 
-**Deleção de Repositório**
+2. On the other hand, and **only** in this circumstance, if the related record from the **user_repositories** table does not have any related tag, that is, the **tags** column is empty (or *null*) the text box can be filled out with one or more suggested words to identify the repository.
 
-Em continuidade, caso um repositório que foi recentemente deletado da tabela **user_repository_tag** não esteja associado a outros usuários na mesma tabela, ele também será removido da tabela **repository**.
+The proposed mechanism for tag suggestion is to get tags (if any) previously assigned to the same repository by other users in the **user_repositories** table through the API request:
 
-#### Atualização de repositório
-
-Finalmente, é avaliado **somente** os repositórios associados ao usuário na tabela **user_repository_tag** que **também** estão estrelados pelo usuário no Github. (Isto é, os repositórios que estão em ambas as listas).
-
-Estes repositórios vão ser atualizados na tabela **repository** por meio da seguinte requisição da API:
-
-Requisição:
+Request:
 
 ```
-Método: HTTP PUT
+Method: HTTP GET
 ```
 
 ```
-URL: http://{host}:8080/repositories/{repositoryID}
+URL: http://{host}:8080/repositories/MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the repository is successfully obtained.
 ```
 
 ```
+*application/json*
+
 Body: {
-    "name": <Nome do repositório>,
-    "description": <Descrição do repositório>,
-    "url": <URL do repositório>,
-    "language": <Linguagem do repositório>
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go",
+    "tags": [
+        "google"
+    ]
 }
 ```
 
-### 7.2 Página com a tabela de repositórios
+(P.S. The API request above is to get all data of the repository. Therefore, its **tags** field refers to all words assigned to the repository by all its associated users from the **user_repositories** table. In the case above, only the **google** tag would be considered as tags suggestion and displayed in the text box.)
 
-Após o acesso a página inicial do projeto, a inserção de um *username* de um usuário válido do Github e o clique no botão **get repositories**, a página com os repositórios estrelados associados ao usuário é demonstrada com os componentes descritos abaixo:
-
-No canto superior a esquerda existe uma caixa de texto com a mensagem *search by tag* que é utilizada para filtrar repositórios pelo nome de uma de suas tags relacionadas e a busca por tags funciona com palavras incompletas.
-
-Assim, caso um repositório possua uma tag nomeada **go** e outro repositório tenha uma tag chamada **golang**, ao realizar uma busca por repositórios utilizando a palavra **go**, ou ainda somente a letra **g**, ambos repositórios serão retornados.
-
-No canto superior a direita existe um *link* chamado **Home** utilizado para voltar a página inicial do projeto.
-
-Abaixo destes componentes existe uma tabela de repositórios provida com os seguintes dados: nome do repositório, descrição e linguagem.
-
-A respeito do preenchimento da tabela de repositórios, caso o *username* inserido na página inicial não pertença a um usuário válido do Github, ou ainda, o *username* pertença a usuário válido, porém que não possui repositórios estrelados associados, a tabela de repositórios é ilustrada sem qualquer registro.
-
-Em continuidade, caso a tabela seja preenchida com repositórios, as tags relacionadas a um determinado repositório registradas em um momento anterior serão mostradas abaixo da coluna **Tags**, na linha corresponde ao repositório relacionado.
-
-A direita da tabela existe uma última coluna sem título e cada uma de suas linhas apresenta um *link* chamado *edit* usado para a edição de tags relacionadas aos repositórios correspondentes de acordo com a linha selecionada. Com isso, ao clicar no componente *edit*, uma janela para a edição de tags é demonstrada.
-
-A janela contém uma caixa de texto para a edição de tags que é **automaticamente** preenchida com palavras de acordo com duas situações.
-
-Caso o repositório tenha uma ou mais tags relacionadas de acordo com registros correspondentes criados na tabela **user_repository_tags** em um momento passado, tais palavras são ilustradas dentro da caixa de texto.
-
-Por outro lado, e **somente** nesta circunstância, caso o repositório não tenha qualquer tag relacionada, a caixa de texto é preenchida com sugestões de tags para identificar o repositório.
-
-O mecanismo de sugestão de tags proposto é a busca por tags anteriormente atribuídas por outros usuários associados ao mesmo repositório na tabela **user_repository_tag** que são recuperadas do repositório por meio da seguinte requisição da API:
-
-Requisição:
+As previously indicated, the maximum number of suggested tags for each repository is determined by the **REACT_APP_MAX_TAGS_NBR** environment variable from in the **front-end/.env** file. For example:
 
 ```
-Método: HTTP GET
+REACT_APP_MAX_TAGS_NBR=5
 ```
 
-```
-URL: http://{host}:8080/repositories/{repositoryId}
-```
-
-Conforme indicado previamente, o número máximo de tags sugeridas para cada repositório é determinado por meio da variável de ambiente **MAX_TAGS_NBR** inserida no arquivo **front-end/.env**. Por exemplo:
-
-```
-MAX_TAGS_NBR=<Número máximo de tags>
-```
-
-Para que as tags sejam relacionadas aos repositórios com sucesso elas devem ser inseridas na caixa de texto e separadas por vírgula (,) e espaço simples. Por exemplo: 
+In order successfully to relate the tags to the repositories the words must be inserted in the text box separated by commas (,) and single space. For example:
 
 ```
 go, golang
 ```
 
-Em contrapartida, para que nenhuma alteração seja realizada com relação a edição de tags, basta clicar no botão **Cancelar** ou ainda no ícone X do canto superior a direita.
+On the other hand, in order to not apply any change with regard to the edition of tags, just click the **Cancel** button or the **X** icon in the upper right corner.
 
-Para descrever a edição de tags em maiores detalhes, suponha que um determinado repositório não tenha qualquer tag relacionada. Como consequência o campo **tag_id** da associação entre usuário e o repositório na tabela **user_repository_tag** é vazio.
+In order to describe the edition of tags in more detail, suppose that a given repository does not have any related tags. On other words, the related record from the **user_repositories** table does not contain any value in the **tags** column.
 
-A criação de uma tag ocorre por meio da seguinte requisição da API:
+Then, whenever the user writes one or more tags and clicks the **Save** button the related record from the **user_repositories** table will be associated with such words through the API request:
 
-Requisição:
-
-```
-Método: HTTP POST
-```
+Request:
 
 ```
-URL: http://{host}:8080/users/{userId}/repositories/{repositoryId}/tag
+Method: HTTP PUT
 ```
 
 ```
+URL: http://{host}:8080/users/icaroribeiro/repositories/MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==
+```
+
+```
+*application/json*
+
 Body {
-    name: <Nome da tag>
+    "tags": [
+      "go", "golang"
+    ]
 }
 ```
 
-Durante a criação de uma tag, caso uma palavra inserida na caixa de texto para edição de tags não esteja relacionada a qualquer repositório na tabela **user_repository_tag**, ou seja, ela é uma nova palavra que ainda não foi registrada na tabela **tag**, primeiramente é gerado um identificador único para tal palavra.
-
-Em seguida, para identificar o relacionamento entre a tag e o repositório associado ao usuário do Github, um registro é criado na tabela **user_repository_tag** e o campo **tag_id** é preenchido com o identificar único da tag. Além disso, uma vez que ela é uma nova palavra, também é criado um registro na tabela **tag** utilizando o identificar único e o nome da tag.
-
-Por outro lado, caso uma tag adicionada na caixa de texto para edição de tags já esteja relacionada a qualquer outro repositório na tabela **user_repository_tag**, independentemente do usuário do Github associado, um registro é criado na tabela **user_repository_tag** e o campo **tag_id** é preenchido com o identificador único da tag já existente na tabela **tag**. 
-
-Finalmente, caso uma tag que já estava relacionada a um repositório é removida da caixa de texto para edição de tags, isto significa que tal palavra não deve estar mais relacionada ao repositório e, por conta disso, tal relacionamento precisa ser removido.
-
-A remoção de uma tag ocorre por meio da seguinte requisição da API:
-
-Requisição:
+Response:
 
 ```
-Método: HTTP DELETE
+Code: 200 OK - In the case of the user repository is successfully updated.
 ```
 
 ```
-URL: http://{host}:8080/users/{userId}/repositories/{repositoryId}/tags/{tagId}
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go",
+    "tags": [
+        "go",
+        "golang"
+    ]
+}
 ```
 
-Durante a remoção de uma tag, o registro que representa o relacionamento entre a tag e o repositório associado ao usuário do Github é removido da tabela **user_repository_tag**. Posteriormente, com o intuito de evitar o armazenamento de dados que não são utilizados pelo projeto, caso a tag não esteja relacionada a outro repositório ela também é removida da tabela **tag**.
+**Important note**
 
-Neste contexto, quando todas as tags relacionadas a um repositório precisam ser removidas, isto é, todas as palavras que aparecem na caixa de texto para edição de tags são apagadas, todos os registros de relacionamento entre elas e o repositório associado ao usuário do Github são removidos da tabela **user_repository_tag**.
+If the user no longer wants any tag associated to the repository, after clicking **edit** component first he/she must delete all tags from the text box and then click the **Save** button. In this case, the API request body is composed by the **tags** field as an empty array.
 
-Contudo, apesar da remoção dos registros anteriores, ao final **apenas** um registro é criado na tabela **user_repository_tag** com o campo **tag_id** vazio identificando que o repositório **ainda** está associado ao usuário do Github, porém não existe tag alguma relacionada.
+Therefore, whenever tags must be created, edited or even removed, the API request body is **only** composed by the **tags** field along with the words (if any) to be associated with the related record in the **user_repositories** table.
 
-### 7.3 Página de erro
+### 7.3 Error page
 
-Finalmente, uma página de erro é apresentada ao usuário quando o mesmo tenta acessar um endereço inválido, ou seja, um endereço diferente daqueles demonstrados anteriormente. Por exemplo:
+Finally, an error page is presented to the user when the user tries to access an invalid address, that is, an address different from those previously demonstrated. For example:
 
 ```
-http://{host}:3000/<Endereço inválido>
+http://{host}:3000/<Invalid address>
 ```

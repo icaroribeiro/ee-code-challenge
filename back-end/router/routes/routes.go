@@ -22,6 +22,7 @@ func ConfigureRoutes(r *mux.Router, s *server.Server) *mux.Router {
 
     // It refers to the operations linked to repositories.
     routeList = append(routeList, AddGetRepositoryRoute(s))
+    routeList = append(routeList, AddUpdateRepositoryRoute(s))
     routeList = append(routeList, AddGetAllUserGithubStarredRepositoriesRoute(s))
     routeList = append(routeList, AddCreateUserRepositoryRoute(s))
     routeList = append(routeList, AddGetAllUserRepositoriesRoute(s))

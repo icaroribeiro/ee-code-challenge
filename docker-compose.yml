@@ -1,6 +1,24 @@
 version: '3'
 
 services:
+  back-end:
+    container_name: back-end
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    env_file:
+      - ./back-end/.env
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=5fe0aa51399edda813603c16de5456e3bfc1df37
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - db
+      - test-db
+
   front-end:
     container_name: front-end
     build:
@@ -15,22 +33,6 @@ services:
       - "3000:3000"
     expose:
       - "3000"
-
-  back-end:
-    container_name: back-end
-    build:
-      context: ./back-end
-      dockerfile: Dockerfile
-    env_file:
-      - ./back-end/.env
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    depends_on:
-      - db
-      - test-db
 
   db:
     container_name: db

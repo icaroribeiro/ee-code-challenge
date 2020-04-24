@@ -4,5 +4,8 @@ import (
     "testing"
 )
 
+func TestUpdateRepository(t *testing.T) {
+}
+
 func TestUpdateUserRepository(t *testing.T) {
 }
