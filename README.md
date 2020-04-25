@@ -306,9 +306,192 @@ In addition, it is also worth emphasizing that the entire configuration related 
 
 ## 5 - How to use the API *endpoints*?
 
+The API request are performed through the HTTP server port **8080** and the API responses can be viewed by means of a **front-end** client or test tool, for example **Postman**.
+
 **Important note**
 
-In what follows, the **userId** informed in the request URL of all API requests must be replaced by the **username** of a Github user whereas the **repositoryId** is just the **id** of the related Github repository.
+The **userId** informed in the request URL of all API requests should be replaced by the **username** of a Github user whereas the **repositoryId** is just the **id** of the related Github repository.
+
+In what follows, there is a guide that includes API requests for creating, obtaining, updating and deleting data from the database using the Github user named **icaroribeiro**.
+
+(P.S. Before checking the following examples, consider that no data is recorded prior to this explanation.)
+
+### Status
+
+Request:
+
+```
+Method: HTTP GET
+```
+
+```
+URL: http://{host}:8080/status
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the service has started up correctly and is ready to accept requests.
+```
+
+### Management of Repositories
+
+#### Listing of User Starred Repositories from Github
+
+Request:
+
+```
+Method: HTTP GET
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/githubStarredRepositories
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the user starred repositories are successfully obtained from Github.
+```
+
+```
+*application/json**
+
+Body: [
+    {
+        "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+        "name": "go",
+        "description": "The Go programming language",
+        "url": "https://github.com/golang/go",
+        "language": "Go"
+    }
+]
+```
+
+#### Creation of a Repository
+
+Request:
+
+```
+Method: HTTP POST
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/repository
+```
+
+```
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go"
+}
+```
+
+Response:
+
+```
+Code: 201 Created - In the case of the repository is successfully created.
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go"
+}
+```
+
+**Important note**
+
+In brief, in addition to create the association between the user and its starred repository in the **user_repositories** table, it is also verified if the related repository was previously created in the **repositories** table. If not, then the repository is created in the table. On the other hand, it is checked if any data of the repository changed. If so, then the repository is updated in the table.
+
+#### Edition of Tags by updating a Repository by its id
+
+Request:
+
+```
+Method: HTTP PUT
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/repositories/MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==
+```
+
+```
+Body: {
+  	"tags": [
+        "go", 
+        "golang"
+    ]
+}
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the repository is successfully updated.
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go",
+    "tags": [
+        "go",
+        "golang"
+    ]
+}
+```
+
+#### Deletion of a Repository by its id
+
+Request:
+
+```
+Method: HTTP DELETE
+```
+
+```
+URL: http://{host}:8080/users/icaroribeiro/repositories/MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==
+```
+
+Response:
+
+```
+Code: 200 OK - In the case of the repository is successfully deleted.
+```
+
+```
+*application/json*
+
+Body: {
+    "id": "MDEwOlJlcG9zaXRvcnkyMzA5Njk1OQ==",
+    "name": "go",
+    "description": "The Go programming language",
+    "url": "https://github.com/golang/go",
+    "language": "Go",
+    "tags": [
+        "go",
+        "golang"
+    ]
+}
+```
+
+**Important note**
+
+In brief, in addition to delete the association between the user and its starred repository from the **user_repositories** table, it is also verified if the related repository is associated with any other user in the table. If not, the repository is deleted from the **repositories** table. 
 
 ## 6 - Tests
 
@@ -577,6 +760,8 @@ Still on this scenario, the creation of a record in the **user_repositories** ta
 1. If the repository that is associated with the Github user in the **user_repositories** table has not yet been created in the **repository** table, that is, the repository was never related to any user already recorded, then it will be created in the **repository** table. 
 
 2. Otherwise, if the repository is already associated with any user already recorded, it means that the repository was previously created in the **repository** table. In this case, the data of the repository is updated **only** in the **repository** table. It is considered appropriate since its data may have changed over time, for example its **description**.
+
+(P.S. Based on the explanation above, a repository is **only** created in the **repository** table when there is an association between it and some Github user in the **user_repositories** table through the **repository_id** field.)
 
 #### Deletion of Repositories
 
