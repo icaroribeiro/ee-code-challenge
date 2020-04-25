@@ -15,7 +15,7 @@ const Routes = () => {
       <Switch>
         <DynamicLayoutRoute exact path="/" component={ Home } layout={ "NAV" } />
         <DynamicLayoutRoute path='/repositories' layout={ "NAV" } render={ (props) => (
-          <SubmitContainer {...props } placeholder={ Loading } />
+          <SubmitContainer { ...props } placeholder={ Loading } />
         ) }/>
         <DynamicLayoutRoute path="*" component={ NotFound } />
       </Switch>

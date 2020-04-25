@@ -110,8 +110,7 @@ class TagModal extends React.Component {
       this.props.onRenewRepository(username, repository.id, repository)
           .then(() => {
             if (newTags.length === 0) {  
-              if ((typeof repository.tags === 'undefined') || 
-                (repository.tags && repository.tags.length === 0)) {
+              if ((typeof repository.tags === 'undefined') || (repository.tags && repository.tags.length === 0)) {
                   this.loadSuggestedTags(repository);
                 }
             } else {
@@ -148,8 +147,7 @@ class TagModal extends React.Component {
       if (response.data.tags && response.data.tags.length > 0) {
         var maxTagsNbr = process.env.REACT_APP_MAX_TAGS_NBR;
 
-        if ((typeof maxTagsNbr !== 'undefined') &&
-          (maxTagsNbr && maxTagsNbr > 0)) {
+        if ((typeof maxTagsNbr !== 'undefined') && (maxTagsNbr && maxTagsNbr > 0)) {
             suggestedTags = response.data.tags.slice(0, maxTagsNbr);
         }
       }
@@ -167,8 +165,7 @@ class TagModal extends React.Component {
   componentDidMount() {
     var repository = this.props.repository;
   
-    if ((typeof repository.tags === 'undefined') || 
-      (repository.tags && repository.tags.length === 0)) {
+    if ((typeof repository.tags === 'undefined') || (repository.tags && repository.tags.length === 0)) {
         this.loadSuggestedTags(repository);
     } else {
       this.setState({
@@ -187,20 +184,20 @@ class TagModal extends React.Component {
   render() {
     return (
       <div>
-        <Button color="link" onClick={this.toggle}>{this.props.buttonLabel}</Button>
-        <Container className={styles.Container}>
-          <Modal isOpen={this.state.modal} toggle={this.toggle}>
-            <ModalHeader toggle={this.cancel}>edit tags for {this.props.repository.name}</ModalHeader>
+        <Button color="link" onClick={ this.toggle }>{ this.props.buttonLabel }</Button>
+        <Container className={ styles.Container }>
+          <Modal isOpen={ this.state.modal } toggle={ this.toggle }>
+            <ModalHeader toggle={ this.cancel }>edit tags for { this.props.repository.name }</ModalHeader>
             <ModalBody>
               <Form>
                 <FormGroup>
-                  <Input name="tagsString" value={this.state.tagsString} onChange={this.handleChange}/>
+                  <Input name="tagsString" value={ this.state.tagsString } onChange={ this.handleChange }/>
                 </FormGroup>
               </Form>
             </ModalBody>
-            <ModalFooter style={{alignItems: "center", justifyContent: "center"}}>
-              <Button color="primary" onClick={this.save}>Save</Button>
-              <Button color="secondary" onClick={this.cancel}>Cancel</Button>
+            <ModalFooter style={ { alignItems: "center", justifyContent: "center" } }>
+              <Button color="primary" onClick={ this.save }>Save</Button>
+              <Button color="secondary" onClick={ this.cancel }>Cancel</Button>
             </ModalFooter>
           </Modal>
         </Container>

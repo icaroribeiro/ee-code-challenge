@@ -6,7 +6,7 @@ import LayoutNav from "../LayoutNav";
 const DynamicLayoutRoute = (props) => {
   const actualRouteComponent = (
     <Route
-      {...props}
+      { ...props }
     />
   );
 
@@ -14,7 +14,7 @@ const DynamicLayoutRoute = (props) => {
     case 'NAV': {
       return (
         <LayoutNav>
-          {actualRouteComponent}
+          { actualRouteComponent }
         </LayoutNav>
       )
     }

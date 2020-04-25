@@ -102,7 +102,7 @@ class Repository extends Component {
       >
       {
         props => (
-          <div style={{padding: "0px", margin: "20px"}}>
+          <div style={ { padding: "0px", margin: "20px" } }>
             <SearchBar placeholder="search by tag" { ...props.searchProps } />
             <BootstrapTable
               { ...props.baseProps }

@@ -22,7 +22,7 @@ class LayoutNav extends Component{
           />
         </div>
         <div>
-          {renderData}
+          { renderData }
         </div>
         <div>
           <Footer

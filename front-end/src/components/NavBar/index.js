@@ -19,12 +19,12 @@ const NavBar = (props) => {
   return (
     <div>
       <Navbar 
-        className={styles.Navbar}
+        className={ styles.Navbar }
         color="white" 
         light 
         expand="md">
         <NavbarBrand
-          className={styles.NavbarBrand}>
+          className={ styles.NavbarBrand }>
           githubstars
         </NavbarBrand>
         { displayHomeLink(props.isLogged) }

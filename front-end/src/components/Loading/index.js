@@ -7,11 +7,11 @@ const Loading = (props) => {
   return (
     <div>
       <Progress
-        className={styles.Progress}
-        animated striped value={props.progress}
+        className={ styles.Progress }
+        animated striped value={ props.progress }
       />
       <p 
-        className={styles.Paragraph}
+        className={ styles.Paragraph }
       >
         Getting the repositories list from Github...
       </p>

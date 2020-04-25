@@ -46,7 +46,7 @@ class Home extends Component {
 
   render() {
     return (
-      <Container className={styles.Container}>
+      <Container className={ styles.Container }>
         <CredentialsForm
           handleChange={ this.handleChange.bind(this) }
           handleSubmit={ this.handleSubmit.bind(this) }
