@@ -27,7 +27,7 @@ export const getRepository = (id) => {
 
 export const updateRepository = (id, repository) => { 
   try {
-    return api.get(`/repositories/${id}`,
+    return api.put(`/repositories/${id}`,
         JSON.stringify(repository)
       )
   } catch (err) {
