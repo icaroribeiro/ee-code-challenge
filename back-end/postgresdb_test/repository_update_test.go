@@ -34,7 +34,7 @@ func TestUpdateUserRepository(t *testing.T) {
         t.Fatalf("Failed to obtain the JSON encoding of the user repository %+v: %s", userRepository, err.Error())
     }
 
-    t.Logf("User Repository: %s", body)
+    t.Logf("User Repository: %s", string(bodyBytes))
 
     userRepository = models.UserRepository{
         UserID:       userRepository.UserID,
@@ -103,7 +103,7 @@ func TestUpdateRepository(t *testing.T) {
         t.Fatalf("Failed to obtain the JSON encoding of the repository %+v: %s", repository, err.Error())
     }
 
-    t.Logf("Repository: %s", body)
+    t.Logf("Repository: %s", string(bodyBytes))
 
     repository = models.Repository{
         ID: repository.ID,

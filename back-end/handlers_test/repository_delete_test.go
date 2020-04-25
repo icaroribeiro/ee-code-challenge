@@ -69,7 +69,7 @@ func TestDeleteUserRepository(t *testing.T) {
         t.Fatalf("Failed to obtain the JSON encoding of the repository %+v: %s", repository, err.Error())
     }
 
-    t.Logf("Repository: %s", string(bodyBytes))     
+    t.Logf("Repository: %s", string(bodyBytes))
 
     method = "DELETE"
 

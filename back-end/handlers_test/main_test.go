@@ -23,8 +23,6 @@ func init() {
 
     envVariablesMap = make(map[string]string)
 
-    envVariablesMap["GITHUB_PERSONAL_ACCESS_TOKEN"] = ""
-
     envVariablesMap["TEST_DB_USERNAME"] = ""
     envVariablesMap["TEST_DB_PASSWORD"] = ""
     envVariablesMap["TEST_DB_HOST"] = ""
@@ -59,11 +57,8 @@ func TestMain(m *testing.M) {
 // It configures the settings before running the tests. It returns an integer denoting an exit code to be used 
 // in the TestMain function. In the case, if the exit code is 0 it denotes success while all other codes denote failure.
 func testMain(m *testing.M) int {
-    var token string
     var dbConfig postgresdb.DBConfig
     var err error
-
-    token = envVariablesMap["GITHUB_PERSONAL_ACCESS_TOKEN"]
 
     dbConfig = postgresdb.DBConfig{
         Username: envVariablesMap["TEST_DB_USERNAME"],
@@ -73,7 +68,7 @@ func testMain(m *testing.M) int {
         Name:     envVariablesMap["TEST_DB_NAME"],
     }
 
-    s, err = server.CreateServer(token, dbConfig)
+    s, err = server.CreateServer("", dbConfig)
 
     if err != nil {
         log.Printf("Failed to configure the server: %s", err.Error())

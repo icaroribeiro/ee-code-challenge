@@ -109,6 +109,8 @@ func (d *Datastore) GetAllUserRepositoriesByUserId(userId string) ([]models.User
                     pq.Array(&dataArray))
 
         // Complete the list of the tags.
+        userRepository.Tags = []string{}
+
         for _, data = range dataArray {
             driverValue, err = data.Value()
     
@@ -153,6 +155,8 @@ func (d *Datastore) GetAllUserRepositoriesByRepositoryId(repositoryId string) ([
                     pq.Array(&dataArray))
 
         // Complete the list of the tags.
+        userRepository.Tags = []string{}
+
         for _, data = range dataArray {
             driverValue, err = data.Value()
     

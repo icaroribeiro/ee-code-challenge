@@ -37,6 +37,8 @@ func UpdateRepository(s *server.Server) http.HandlerFunc {
             return
         }
 
+        repository.ID = repositoryId
+
         if repository.Name == "" {
             utils.RespondWithJson(w, http.StatusBadRequest, 
                 map[string]string{"error": "The name field is required and must be set to a non-empty value"})

@@ -584,10 +584,6 @@ $ go test -v -run=TestCreateUserRepository
 ```
 
 ```
-$ go test -v -run=TestGetAllUserGithubStarredRepositories
-```
-
-```
 $ go test -v -run=TestGetAllUserRepositories
 ```
 
@@ -620,6 +616,12 @@ The project's home page is presented by the **front-end** application when acces
 ``
 http://{host}:3000
 ``
+
+As previously explained, the *host* corresponds to the value informed when executing a command at a command prompt with access to instructions directed to Docker: 
+
+```
+$ docker-machine ip
+```
 
 To access the page with the table of the starred repositories, first, it is necessary to enter a **username** of a valid Github user in the text box shown and then click on the **get repositories** button.
 

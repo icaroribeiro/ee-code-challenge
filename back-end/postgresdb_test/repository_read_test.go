@@ -72,6 +72,7 @@ func TestGetAllUserRepositoriesByUserId(t *testing.T) {
     userRepository = models.UserRepository{
         UserID:       utils.GenerateRandomString(10),
         RepositoryID: utils.GenerateRandomString(10),
+        Tags:         []string{},
     }
 
     body = fmt.Sprintf(`{"user_id":"%s","repository_id:"%s"}`, userRepository.UserID, userRepository.RepositoryID)
@@ -126,6 +127,7 @@ func TestGetAllUserRepositoriesByRepositoryId(t *testing.T) {
     userRepository = models.UserRepository{
         UserID:       utils.GenerateRandomString(10),
         RepositoryID: utils.GenerateRandomString(10),
+        Tags:         []string{},
     }
 
     body = fmt.Sprintf(`{"user_id":"%s","repository_id:"%s"}`, userRepository.UserID, userRepository.RepositoryID)

@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+    "fmt"
     "net/http"
     "net/http/httptest"
     "testing"
@@ -16,7 +17,7 @@ func TestGetStatus(t *testing.T) {
 
     method = "GET"
 
-    path = "/status"
+    path = fmt.Sprintf("/%s", "status")
 
     request, err = http.NewRequest(method, path, nil)
 
