@@ -1,8 +1,8 @@
 package postgresdb_test
 
 import (
-    "github.com/icaroribeiro/stone-code-challenge/back-end/postgresdb"
-    "github.com/icaroribeiro/stone-code-challenge/back-end/utils"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/postgresdb"
+    "github.com/icaroribeiro/ee-code-challenge/back-end/utils"
     "log"
     "os"
     "testing"

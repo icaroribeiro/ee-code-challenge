@@ -10,7 +10,7 @@ type Repository struct {
 }
 
 type UserRepository struct {
-	UserID       string
-	RepositoryID string
+	UserID       string   `json:"user_id"`
+	RepositoryID string   `json:"repository_id"`
 	Tags         []string `json:"tags,omitempty"`
 }
