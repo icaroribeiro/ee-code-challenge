@@ -2,7 +2,7 @@
 	"openapi": "3.0.0",
 	"info": {
 		"version": "1.0.0",
-		"title": "Estrategia Educacional Code Challenge",
+		"title": "Estratégia Educacional Code Challenge",
 		"description": "A REST API implemented using Go programming language and Postgres database to manage operations linked to Github starred repositories and related tags.",
 		"contact": {
 			"name": "Icaro Ribeiro",
