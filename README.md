@@ -71,7 +71,7 @@ HTTP_SERVER_PORT=8080
 
 In order to not compromise the integrity of the database used by the project in terms of data generated from the execution of the test cases, two Postgres databases will be used.
 
-In this sense, to facilitate future explanations regarding the details of the databases, consider that the database used for the storage of data in a "normal" actions is the **development** database and the one used for the storage of data resulting from the test cases is the **test** database.
+In this sense, to facilitate future explanations regarding the details of the databases, consider that the database used for the storage of data in "normal" actions is the **development** database and the one used for the storage of data resulting from the test cases is the **test** database.
 
 These databases are named **db** and **test-db** by the environment variables **DB_NAME** of the **back-end/.env** file and **TEST_DB_NAME** of the **back-end/.test.env** file, respectively.
 
